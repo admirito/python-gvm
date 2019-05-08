@@ -1,0 +1,42 @@
+Source: python-gvm
+Section: python
+Priority: optional
+Maintainer: Mohammad Razavi <mrazavi64@gmail.com>
+Build-Depends: debhelper (>= 10), dh-python, python3-all, python3-setuptools, python3-lxml, python3-defusedxml, python3-paramiko
+# python3-sphinx, python3-sphinxcontrib.napoleon
+Standards-Version: 4.1.2
+Homepage: https://community.greenbone.net/
+X-Python3-Version: >= 3.2
+Vcs-Git: https://github.com/admirito/python-gvm.git
+Vcs-Browser: https://github.com/admirito/python-gvm
+Testsuite: autopkgtest-pkg-python
+
+Package: python3-gvm
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}
+Suggests: python3-gvm-doc
+Description: remote network security auditor - python 3 libraries
+ The Greenbone Vulnerability Management Solution (previously known as
+ Open Vulnerability Assessment System) is a modular security auditing tool,
+ used for testing remote systems for vulnerabilities that should be fixed.
+ .
+ This package contains the Python 3 API library i.e. a collection of
+ APIs that help with remote controlling a Greenbone Vulnerability
+ Manager (GVM). The library essentially abstracts accessing the
+ communication protocols Greenbone Management Protocol (GMP) and Open
+ Scanner Protocol (OSP).
+
+# Package: python3-gvm-doc
+# Architecture: all
+# Section: doc
+# Depends: ${sphinxdoc:Depends}, ${misc:Depends}
+# Description: remote network security auditor - python 3 libraries docs
+#  The Greenbone Vulnerability Management Solution (previously known as
+#  Open Vulnerability Assessment System) is a modular security auditing tool,
+#  used for testing remote systems for vulnerabilities that should be fixed.
+#  .
+#  This package contains the Python 3 API library i.e. a collection of
+#  APIs that help with remote controlling a Greenbone Vulnerability
+#  Manager (GVM). The library essentially abstracts accessing the
+#  communication protocols Greenbone Management Protocol (GMP) and Open
+#  Scanner Protocol (OSP).
