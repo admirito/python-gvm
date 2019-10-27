@@ -1,3 +1,9 @@
+python-gvm (1.0.0-1) bionic; urgency=medium
+
+  * Import upstream version 1.0.0
+
+ -- Mohammad Razavi <mrazavi64@gmail.com>  Sun, 27 Oct 2019 16:40:30 +0330
+
 python-gvm (1.0.0~beta2-1) bionic; urgency=medium
 
   * Initial release
