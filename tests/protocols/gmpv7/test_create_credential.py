@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # Copyright (C) 2018 Greenbone Networks GmbH
 #
@@ -20,30 +19,60 @@
 import unittest
 
 from gvm.errors import RequiredArgument, InvalidArgument
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from gvm.protocols.gmpv7 import (
+    CredentialType,
+    SnmpAuthAlgorithm,
+    SnmpPrivacyAlgorithm,
+)
+
+from . import Gmpv7TestCase
 
 
-class GmpCreateCredentialTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
+class GmpCreateCredentialTestCase(Gmpv7TestCase):
     def test_create_up_credential_missing_name(self):
         with self.assertRaises(RequiredArgument):
             self.gmp.create_credential(
-                name='', credential_type='up', login='foo')
+                name='',
+                credential_type=CredentialType.USERNAME_PASSWORD,
+                login='foo',
+            )
 
         with self.assertRaises(RequiredArgument):
             self.gmp.create_credential(
-                name=None, credential_type='up', login='foo')
+                name=None,
+                credential_type=CredentialType.USERNAME_PASSWORD,
+                login='foo',
+            )
 
     def test_create_up_credential(self):
         self.gmp.create_credential(
-            name='foo', credential_type='up', comment='bar',
-            allow_insecure=True, login='Max', password='123')
+            name='foo',
+            credential_type=CredentialType.USERNAME_PASSWORD,
+            comment='bar',
+            login='Max',
+            password='123',
+        )
+
+        self.connection.send.has_been_called_with(
+            '<create_credential>'
+            '<name>foo</name>'
+            '<type>up</type>'
+            '<comment>bar</comment>'
+            '<login>Max</login>'
+            '<password>123</password>'
+            '</create_credential>'
+        )
+
+    def test_create_up_credential_with_allow_insecure(self):
+        self.gmp.create_credential(
+            name='foo',
+            credential_type=CredentialType.USERNAME_PASSWORD,
+            comment='bar',
+            login='Max',
+            password='123',
+            allow_insecure=True,
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'
@@ -56,14 +85,38 @@ class GmpCreateCredentialTestCase(unittest.TestCase):
             '</create_credential>'
         )
 
+        self.gmp.create_credential(
+            name='foo',
+            credential_type=CredentialType.USERNAME_PASSWORD,
+            comment='bar',
+            login='Max',
+            password='123',
+            allow_insecure=False,
+        )
+
+        self.connection.send.has_been_called_with(
+            '<create_credential>'
+            '<name>foo</name>'
+            '<type>up</type>'
+            '<comment>bar</comment>'
+            '<allow_insecure>0</allow_insecure>'
+            '<login>Max</login>'
+            '<password>123</password>'
+            '</create_credential>'
+        )
+
     def test_cc_credential_missing_certificate(self):
         with self.assertRaises(RequiredArgument):
             self.gmp.create_credential(
-                name='foo', credential_type='cc')
+                name='foo', credential_type=CredentialType.CLIENT_CERTIFICATE
+            )
 
     def test_create_cc_credential(self):
         self.gmp.create_credential(
-            name='foo', credential_type='cc', certificate='abcdef')
+            name='foo',
+            credential_type=CredentialType.CLIENT_CERTIFICATE,
+            certificate='abcdef',
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'
@@ -75,8 +128,11 @@ class GmpCreateCredentialTestCase(unittest.TestCase):
 
     def test_create_cc_credential_with_private_key(self):
         self.gmp.create_credential(
-            name='foo', credential_type='cc', certificate='abcdef',
-            private_key='123456')
+            name='foo',
+            credential_type=CredentialType.CLIENT_CERTIFICATE,
+            certificate='abcdef',
+            private_key='123456',
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'
@@ -92,18 +148,26 @@ class GmpCreateCredentialTestCase(unittest.TestCase):
     def test_create_usk_credential_missing_private_key(self):
         with self.assertRaises(RequiredArgument):
             self.gmp.create_credential(
-                name='foo', credential_type='usk', login='foo')
-
+                name='foo',
+                credential_type=CredentialType.USERNAME_SSH_KEY,
+                login='foo',
+            )
 
     def test_create_usk_credential_missing_login(self):
         with self.assertRaises(RequiredArgument):
             self.gmp.create_credential(
-                name='foo', credential_type='usk', private_key='123456')
+                name='foo',
+                credential_type=CredentialType.USERNAME_SSH_KEY,
+                private_key='123456',
+            )
 
     def test_create_usk_credential(self):
         self.gmp.create_credential(
-            name='foo', credential_type='usk', private_key='123456',
-            login='foo')
+            name='foo',
+            credential_type=CredentialType.USERNAME_SSH_KEY,
+            private_key='123456',
+            login='foo',
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'
@@ -118,8 +182,12 @@ class GmpCreateCredentialTestCase(unittest.TestCase):
 
     def test_create_usk_credential_with_key_phrase(self):
         self.gmp.create_credential(
-            name='foo', credential_type='usk', private_key='123456',
-            login='foo', key_phrase='abcdef')
+            name='foo',
+            credential_type=CredentialType.USERNAME_SSH_KEY,
+            private_key='123456',
+            login='foo',
+            key_phrase='abcdef',
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'
@@ -136,22 +204,32 @@ class GmpCreateCredentialTestCase(unittest.TestCase):
     def test_create_snmp_credential_invalid_auth_algorithm(self):
         with self.assertRaises(InvalidArgument):
             self.gmp.create_credential(
-                name='foo', credential_type='snmp', login='foo')
+                name='foo', credential_type=CredentialType.SNMP, login='foo'
+            )
 
         with self.assertRaises(InvalidArgument):
             self.gmp.create_credential(
-                name='foo', credential_type='snmp', login='foo',
-                auth_algorithm='')
+                name='foo',
+                credential_type=CredentialType.SNMP,
+                login='foo',
+                auth_algorithm='',
+            )
 
         with self.assertRaises(InvalidArgument):
             self.gmp.create_credential(
-                name='foo', credential_type='snmp', login='foo',
-                auth_algorithm='bar')
+                name='foo',
+                credential_type=CredentialType.SNMP,
+                login='foo',
+                auth_algorithm='bar',
+            )
 
     def test_create_snmp_credential_auth_algorithm_md5(self):
         self.gmp.create_credential(
-            name='foo', credential_type='snmp', login='foo',
-            auth_algorithm='md5')
+            name='foo',
+            credential_type=CredentialType.SNMP,
+            login='foo',
+            auth_algorithm=SnmpAuthAlgorithm.MD5,
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'
@@ -164,8 +242,11 @@ class GmpCreateCredentialTestCase(unittest.TestCase):
 
     def test_create_snmp_credential_auth_algorithm_sha1(self):
         self.gmp.create_credential(
-            name='foo', credential_type='snmp', login='foo',
-            auth_algorithm='sha1')
+            name='foo',
+            credential_type=CredentialType.SNMP,
+            login='foo',
+            auth_algorithm=SnmpAuthAlgorithm.SHA1,
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'
@@ -178,8 +259,12 @@ class GmpCreateCredentialTestCase(unittest.TestCase):
 
     def test_create_snmp_credential_with_community(self):
         self.gmp.create_credential(
-            name='foo', credential_type='snmp', login='foo',
-            auth_algorithm='sha1', community='ipsum')
+            name='foo',
+            credential_type=CredentialType.SNMP,
+            login='foo',
+            auth_algorithm=SnmpAuthAlgorithm.SHA1,
+            community='ipsum',
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'
@@ -194,18 +279,30 @@ class GmpCreateCredentialTestCase(unittest.TestCase):
     def test_create_snmp_credential_invalid_privacy_algorithm(self):
         with self.assertRaises(InvalidArgument):
             self.gmp.create_credential(
-                name='foo', credential_type='snmp', login='foo',
-                auth_algorithm='sha1', privacy_algorithm='')
+                name='foo',
+                credential_type=CredentialType.SNMP,
+                login='foo',
+                auth_algorithm=SnmpAuthAlgorithm.SHA1,
+                privacy_algorithm='',
+            )
 
         with self.assertRaises(InvalidArgument):
             self.gmp.create_credential(
-                name='foo', credential_type='snmp', login='foo',
-                auth_algorithm='sha1', privacy_algorithm='foo')
+                name='foo',
+                credential_type=CredentialType.SNMP,
+                login='foo',
+                auth_algorithm=SnmpAuthAlgorithm.SHA1,
+                privacy_algorithm='foo',
+            )
 
     def test_create_snmp_credential_with_privacy_algorithm_aes(self):
         self.gmp.create_credential(
-            name='foo', credential_type='snmp', login='foo',
-            auth_algorithm='sha1', privacy_algorithm='aes')
+            name='foo',
+            credential_type=CredentialType.SNMP,
+            login='foo',
+            auth_algorithm=SnmpAuthAlgorithm.SHA1,
+            privacy_algorithm=SnmpPrivacyAlgorithm.AES,
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'
@@ -221,8 +318,12 @@ class GmpCreateCredentialTestCase(unittest.TestCase):
 
     def test_create_snmp_credential_with_privacy_algorithm_des(self):
         self.gmp.create_credential(
-            name='foo', credential_type='snmp', login='foo',
-            auth_algorithm='sha1', privacy_algorithm='des')
+            name='foo',
+            credential_type=CredentialType.SNMP,
+            login='foo',
+            auth_algorithm=SnmpAuthAlgorithm.SHA1,
+            privacy_algorithm=SnmpPrivacyAlgorithm.DES,
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'
@@ -238,8 +339,12 @@ class GmpCreateCredentialTestCase(unittest.TestCase):
 
     def test_create_snmp_credential_with_privacy_password(self):
         self.gmp.create_credential(
-            name='foo', credential_type='snmp', login='foo',
-            auth_algorithm='sha1', privacy_password='123')
+            name='foo',
+            credential_type=CredentialType.SNMP,
+            login='foo',
+            auth_algorithm=SnmpAuthAlgorithm.SHA1,
+            privacy_password='123',
+        )
 
         self.connection.send.has_been_called_with(
             '<create_credential>'

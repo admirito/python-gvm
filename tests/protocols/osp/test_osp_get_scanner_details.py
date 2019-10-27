@@ -18,10 +18,10 @@
 
 import unittest
 
-from gvm.errors import InvalidArgument
 from gvm.protocols.ospv1 import Osp
 
 from .. import MockConnection
+
 
 class OSPGetScannerDetailsTestCase(unittest.TestCase):
     def setUp(self):
@@ -31,9 +31,7 @@ class OSPGetScannerDetailsTestCase(unittest.TestCase):
     def test_get_scanner_details_with_params(self):
         self.osp.get_scanner_details()
 
-        self.connection.send.has_been_called_with(
-            '<get_scanner_details/>'
-        )
+        self.connection.send.has_been_called_with('<get_scanner_details/>')
 
 
 if __name__ == '__main__':

@@ -5,25 +5,20 @@ Protocols
 
 .. automodule:: gvm.protocols
 
+.. toctree::
+    :maxdepth: 2
+
+    gmpv7
+    gmpv8
+    ospv1
+
+Dynamic
+^^^^^^^
+
+To dynamically use the supported GMP version of the manager daemon see
+:mod:`gvm.protocols.gmp` for details.
+
 Latest
 ^^^^^^
 
 .. automodule:: gvm.protocols.latest
-
-GMP v7
-^^^^^^
-
-.. automodule:: gvm.protocols.gmpv7
-
-.. autoclass:: Gmp
-    :members:
-    :inherited-members:
-
-OSP v1
-^^^^^^
-
-.. automodule:: gvm.protocols.ospv1
-
-.. autoclass:: Osp
-    :members:
-    :inherited-members:

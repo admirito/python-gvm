@@ -18,10 +18,13 @@
 
 import unittest
 
+from collections import OrderedDict
+
 from gvm.errors import RequiredArgument
 from gvm.protocols.ospv1 import Osp
 
 from .. import MockConnection
+
 
 class OSPStartScanTestCase(unittest.TestCase):
     def setUp(self):
@@ -29,27 +32,28 @@ class OSPStartScanTestCase(unittest.TestCase):
         self.osp = Osp(self.connection)
 
     def test_start_scan(self):
-        scanner_params = dict()
+        scanner_params = OrderedDict()
         scanner_params['key1'] = 'value1'
 
         targets = list()
-        _target1 = dict()
+        _target1 = OrderedDict()
         _target1['hosts'] = 'localhost'
         _target1['ports'] = '22,80'
         targets.append(_target1)
 
-        _target2 = dict()
+        _target2 = OrderedDict()
         _target2['hosts'] = '192.168.10.1'
         _target2['ports'] = '443'
-        _credential1 = dict()
-        _credential1 = {'smb': {'username': 'username',
-                               'password': 'pass',
-                               'port': 'port',
-                               'type': 'type'}}
+        _smb = OrderedDict()
+        _smb['username'] = 'username'
+        _smb['password'] = 'pass'
+        _smb['port'] = 'port'
+        _smb['type'] = 'type'
+        _credential1 = {'smb': _smb}
         _target2['credentials'] = _credential1
         targets.append(_target2)
 
-        vts = dict()
+        vts = OrderedDict()
         vts['vt1'] = {'value_id': 'value'}
         vts['vt_groups'] = ['family=A', 'family=B']
 
@@ -58,7 +62,7 @@ class OSPStartScanTestCase(unittest.TestCase):
             parallel=10,
             scanner_params=scanner_params,
             targets=targets,
-            vt_selection=vts
+            vt_selection=vts,
         )
 
         self.connection.send.has_been_called_with(
@@ -69,7 +73,7 @@ class OSPStartScanTestCase(unittest.TestCase):
             '<target><hosts>192.168.10.1</hosts>'
             '<ports>443</ports>'
             '<credentials>'
-            '<credential port="port" service="smb" type="type">'
+            '<credential type="type" port="port" service="smb">'
             '<username>username</username>'
             '<password>pass</password>'
             '</credential></credentials>'
@@ -82,14 +86,11 @@ class OSPStartScanTestCase(unittest.TestCase):
 
     def test_start_scan_without_target(self):
         with self.assertRaises(RequiredArgument):
-             self.osp.start_scan()
+            self.osp.start_scan()
 
     def test_start_scan_legacy(self):
         self.osp.start_scan(
-            scan_id='123-456',
-            parallel=10,
-            target="localhost",
-            ports="22"
+            scan_id='123-456', parallel=10, target="localhost", ports="22"
         )
         self.connection.send.has_been_called_with(
             '<start_scan scan_id="123-456" parallel="10" '

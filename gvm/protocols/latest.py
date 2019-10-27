@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2018 Greenbone Networks GmbH
+# Copyright (C) 2018 - 2019 Greenbone Networks GmbH
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -15,9 +15,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Lastest supported protocols.
+"""Latest supported protocols.
 
-This module exposes the lastest supported protocols of gvm.
+This module exposes the latest supported protocols of gvm.
 
 The provided Gmp class implements the latest `Greenbone Management
 Protocol`_.
@@ -27,14 +27,59 @@ For details about the possible supported protocol versions please take a look at
 :py:mod:`gvm.protocols`.
 
 Exports:
-  - :py:class:`gvm.protocols.gmpv7.Gmp`
+  - :py:class:`gvm.protocols.gmpv8.Gmp`
   - :py:class:`gvm.protocols.ospv1.Osp`
 
 .. _Greenbone Management Protocol:
     https://docs.greenbone.net/API/GMP/gmp.html
 """
 
-from .gmpv7 import Gmp
+from .gmpv8 import (
+    Gmp,
+    AlertCondition,
+    AlertEvent,
+    AlertMethod,
+    AliveTest,
+    AssetType,
+    CredentialFormat,
+    CredentialType,
+    EntityType,
+    FeedType,
+    FilterType,
+    HostsOrdering,
+    InfoType,
+    PermissionSubjectType,
+    PortRangeType,
+    ScannerType,
+    SeverityLevel,
+    SnmpAuthAlgorithm,
+    SnmpPrivacyAlgorithm,
+    TicketStatus,
+    TimeUnit,
+)
 from .ospv1 import Osp
 
-__all__ = ['Gmp', 'Osp']
+__all__ = [
+    "Gmp",
+    "Osp",
+    "AlertCondition",
+    "AlertEvent",
+    "AlertMethod",
+    "AliveTest",
+    "AssetType",
+    "CredentialType",
+    "CredentialFormat",
+    "EntityType",
+    "FeedType",
+    "FilterType",
+    "HostsOrdering",
+    "InfoType",
+    "PermissionSubjectType",
+    "PortRangeType",
+    "ScannerType",
+    "SeverityLevel",
+    "SnmpAuthAlgorithm",
+    "SnmpPrivacyAlgorithm",
+    "TicketStatus",
+    "TimeUnit",
+]

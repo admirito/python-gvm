@@ -16,34 +16,46 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,wrong-import-position
+
+import sys
+
+from pathlib import Path
 
 from setuptools import setup, find_packages
 
-version = __import__('gvm').get_version()
+__here__ = Path(__file__).parent.resolve()
 
-with open('README.md', 'r') as f:
+sys.path.insert(0, str(__here__))
+
+from gvm import get_version
+
+
+with (__here__ / "README.md").open("r") as f:
     long_description = f.read()
 
 setup(
     name='python-gvm',
-    version=version,
+    version=get_version(),
     author='Greenbone Networks GmbH',
     author_email='info@greenbone.net',
     description='Library to communicate with remote servers over GMP or OSP',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/greenbone/python-gvm',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     install_requires=['paramiko', 'lxml', 'defusedxml'],
-    python_requires='>=3',
+    python_requires='>=3.5',
     classifiers=[
         # Full list: https://pypi.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 5 - Production/Stable',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],

@@ -19,28 +19,24 @@
 import unittest
 
 from gvm.errors import GvmError
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from . import Gmpv7TestCase
 
 
-class GmpDeleteOverrideTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
+class GmpDeleteOverrideTestCase(Gmpv7TestCase):
     def test_delete(self):
         self.gmp.delete_override('a1')
 
         self.connection.send.has_been_called_with(
-            '<delete_override override_id="a1" ultimate="0"/>')
+            '<delete_override override_id="a1" ultimate="0"/>'
+        )
 
     def test_delete_ultimate(self):
         self.gmp.delete_override('a1', ultimate=True)
 
         self.connection.send.has_been_called_with(
-            '<delete_override override_id="a1" ultimate="1"/>')
+            '<delete_override override_id="a1" ultimate="1"/>'
+        )
 
     def test_missing_id(self):
         with self.assertRaises(GvmError):

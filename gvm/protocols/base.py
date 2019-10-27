@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2018 Greenbone Networks GmbH
+# Copyright (C) 2018 - 2019 Greenbone Networks GmbH
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -16,22 +16,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Optional, Callable, Any
+
+from gvm.connections import GvmConnection
+
+
 class GvmProtocol:
     """Base class for different GVM protocols
 
     Attributes:
-        connection (:class:`gvm.connections.GvmConnection`): Connection to use
-            to talk with the remote daemon. See :mod:`gvm.connections` for
-            possible connection types.
-        transform (`callable`_, optional): Optional transform callable to
-            convert response data. After each request the callable gets passed
-            the plain response data which can be used to check the data and/or
-            conversion into different representations like a xml dom.
+        connection: Connection to use to talk with the remote daemon. See
+            :mod:`gvm.connections` for possible connection types.
+        transform: Optional transform `callable`_ to convert response data.
+            After each request the callable gets passed the plain response data
+            which can be used to check the data and/or conversion into different
+            representations like a xml dom.
 
             See :mod:`gvm.transforms` for existing transforms.
     """
 
-    def __init__(self, connection, *, transform=None):
+    def __init__(
+        self,
+        connection: GvmConnection,
+        *,
+        transform: Optional[Callable[[str], Any]] = None
+    ):
         self._connection = connection
 
         self._connected = False
@@ -56,7 +65,7 @@ class GvmProtocol:
     def _send(self, data):
         """Send a command to the server
 
-        Args:
+        Arguments:
             data (str): Data to be send over the connection to the server
         """
         self.connect()
@@ -76,20 +85,20 @@ class GvmProtocol:
         """
         return self.send_command(xmlcmd.to_string())
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
         """Status of the current connection
 
         Returns:
-            bool: True if a connection to the remote server has been
-                  established.
+            True if a connection to the remote server has been established.
         """
         return self._connected
 
     def connect(self):
         """Initiates a protocol connection
 
-        Normally connect isn't called directly. Either it's called automatically
-        when sending a protocol command or when using a `with statement`_.
+        Normally connect is not called directly. Either it is called
+        automatically when sending a protocol command or when using a
+        `with statement`_.
 
         .. _with statement:
             https://docs.python.org/3/reference/datamodel.html#with-statement-context-managers
@@ -107,10 +116,10 @@ class GvmProtocol:
             self._connection.disconnect()
             self._connected = False
 
-    def send_command(self, cmd):
+    def send_command(self, cmd: str) -> Any:
         """Send a command to the remote server
 
-        If the class isn't connected to the server yet the connection will be
+        If the class is not connected to the server yet the connection will be
         established automatically.
 
         Arguments:

@@ -19,16 +19,11 @@
 import unittest
 
 from gvm.errors import RequiredArgument
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from . import Gmpv7TestCase
 
-class GmpCreateAgentTestCase(unittest.TestCase):
 
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
+class GmpCreateAgentTestCase(Gmpv7TestCase):
     def test_missing_installer(self):
         with self.assertRaises(RequiredArgument):
             self.gmp.create_agent(installer='', signature='foo', name='bar')
@@ -62,8 +57,9 @@ class GmpCreateAgentTestCase(unittest.TestCase):
         )
 
     def test_create_agent_with_comment(self):
-        self.gmp.create_agent(installer='foo', signature='bar', name='ipsum',
-                              comment='lorem')
+        self.gmp.create_agent(
+            installer='foo', signature='bar', name='ipsum', comment='lorem'
+        )
 
         self.connection.send.has_been_called_with(
             '<create_agent>'
@@ -75,8 +71,12 @@ class GmpCreateAgentTestCase(unittest.TestCase):
         )
 
     def test_create_agent_with_howto_install(self):
-        self.gmp.create_agent(installer='foo', signature='bar', name='ipsum',
-                              howto_install='lorem')
+        self.gmp.create_agent(
+            installer='foo',
+            signature='bar',
+            name='ipsum',
+            howto_install='lorem',
+        )
 
         self.connection.send.has_been_called_with(
             '<create_agent>'
@@ -88,8 +88,9 @@ class GmpCreateAgentTestCase(unittest.TestCase):
         )
 
     def test_create_agent_with_howto_use(self):
-        self.gmp.create_agent(installer='foo', signature='bar', name='ipsum',
-                              howto_use='lorem')
+        self.gmp.create_agent(
+            installer='foo', signature='bar', name='ipsum', howto_use='lorem'
+        )
 
         self.connection.send.has_been_called_with(
             '<create_agent>'

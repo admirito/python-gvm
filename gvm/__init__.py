@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2018 Greenbone Networks GmbH
+# Copyright (C) 2018 - 2019 Greenbone Networks GmbH
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -18,20 +18,24 @@
 """
 Main module of python-gvm.
 """
-from .utils import get_version_string
 
-VERSION = (1, 0, 0, 'beta', 2)
+from pkg_resources import safe_version
+
+VERSION = (1, 0, 0)
 """
 Current Version of python-gvm as a tuple
 """
 
-def get_version():
-    """Returns the version of python-gvm as a string in `PEP440`_ compliant format.
+
+def get_version() -> str:
+    """Returns the version of python-gvm as a string in `PEP440`_ compliant
+    format.
 
     Returns:
-        str: Current version of python-gvm
+        Current version of python-gvm
 
     .. _PEP440:
        https://www.python.org/dev/peps/pep-0440
     """
-    return get_version_string(VERSION)
+    str_version = '.'.join([str(v) for v in VERSION])
+    return safe_version(str_version)

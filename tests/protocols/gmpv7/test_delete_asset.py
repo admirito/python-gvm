@@ -19,34 +19,36 @@
 import unittest
 
 from gvm.errors import GvmError
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from . import Gmpv7TestCase
 
-class GmpDeleteAssetTestCase(unittest.TestCase):
 
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
+class GmpDeleteAssetTestCase(Gmpv7TestCase):
     def test_delete_asset(self):
         self.gmp.delete_asset(asset_id='a1')
 
         self.connection.send.has_been_called_with(
-            '<delete_asset asset_id="a1"/>')
+            '<delete_asset asset_id="a1"/>'
+        )
 
     def test_delete_from_report(self):
         self.gmp.delete_asset(report_id='a1')
 
         self.connection.send.has_been_called_with(
-            '<delete_asset report_id="a1"/>')
+            '<delete_asset report_id="a1"/>'
+        )
 
     def test_delete_passing_asset_and_report(self):
         self.gmp.delete_asset(report_id='r1', asset_id='a1')
 
         self.connection.send.has_been_called_with(
-            '<delete_asset asset_id="a1"/>')
+            '<delete_asset asset_id="a1"/>'
+        )
 
     def test_missing_arguments(self):
         with self.assertRaises(GvmError):
             self.gmp.delete_asset()
+
+
+if __name__ == '__main__':
+    unittest.main()

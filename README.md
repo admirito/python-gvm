@@ -1,6 +1,6 @@
 ![Greenbone Logo](https://www.greenbone.net/wp-content/uploads/gb_logo_resilience_horizontal.png)
 
-# Greenbone Vulnerability Management Python Library
+# Greenbone Vulnerability Management Python Library <!-- omit in toc -->
 
 [![GitHub releases](https://img.shields.io/github/release-pre/greenbone/python-gvm.svg)](https://github.com/greenbone/python-gvm/releases)
 [![PyPI release](https://img.shields.io/pypi/v/gvm.svg)](https://pypi.org/project/python-gvm/)
@@ -14,16 +14,24 @@ Manager (GSM) appliance and its underlying Greenbone Vulnerability Manager
 (GVM). The library essentially abstracts accessing the communication protocols
 Greenbone Management Protocol (GMP) and Open Scanner Protocol (OSP).
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
-* [Installation](#installation)
-  * [Requirements](#requirements)
-  * [Install using pip](#install-using-pip)
-* [Example](#example)
-* [Support](#support)
-* [Maintainer](#maintainer)
-* [Contributing](#contributing)
-* [License](#license)
+- [Documentation](#Documentation)
+- [Installation](#Installation)
+  - [Requirements](#Requirements)
+  - [Install using pip](#Install-using-pip)
+- [Example](#Example)
+- [Support](#Support)
+- [Maintainer](#Maintainer)
+- [Contributing](#Contributing)
+- [License](#License)
+
+## Documentation
+
+The documentation for python-gvm can be found at
+[https://python-gvm.readthedocs.io/](https://python-gvm.readthedocs.io/en/latest/).
+Please always take a look at the documentation for further details. This
+**README** just gives you a short overview.
 
 ## Installation
 
@@ -36,12 +44,7 @@ Python 3.5 and later is supported.
 You can install the latest stable release of python-gvm from the Python Package
 Index using [pip](https://pip.pypa.io/):
 
-    pip install python-gvm
-
-alternatively download or clone this repository and install the latest
-development version:
-
-    pip install .
+    pip install --user python-gvm
 
 ## Example
 
@@ -53,9 +56,9 @@ from gvm.xml import pretty_print
 
 connection = UnixSocketConnection()
 transform = EtreeTransform()
-gmp = Gmp(connection, transform)
+gmp = Gmp(connection, transform=transform)
 
-# Retrieve current GMP version
+# Retrieve GMP version supported by the remote daemon
 version = gmp.get_version()
 
 # Prints the XML in beautiful form
@@ -72,11 +75,6 @@ task_names = tasks.xpath('task/name/text()')
 pretty_print(task_names)
 ```
 
-## Documentation
-
-The documentation for python-gvm can be found at
-[https://python-gvm.readthedocs.io/](https://python-gvm.readthedocs.io/en/latest/)
-
 ## Support
 
 For any question on the usage of python-gvm please use the
@@ -92,9 +90,9 @@ This project is maintained by [Greenbone Networks GmbH](https://www.greenbone.ne
 ## Contributing
 
 Your contributions are highly appreciated. Please
-[create a pull request](https://github.com/greenbone/gvm-tools/pulls) on GitHub.
+[create a pull request](https://github.com/greenbone/python-gvm/pulls) on GitHub.
 For bigger changes, please discuss it first in the
-[issues](https://github.com/greenbone/gvm-tools/issues).
+[issues](https://github.com/greenbone/python-gvm/issues).
 
 For development you should use [pipenv](https://pipenv.readthedocs.io/en/latest/)
 to keep you python packages separated in different environments. First install
@@ -110,8 +108,15 @@ in the checkout directory of python-gvm (the directory containing the Pipfile)
 to install all dependencies including the packages only required for
 development.
 
+Please create your git commits from within the Python environment to apply our
+[git hooks](https://github.com/greenbone/autohooks).
+
+    $ pipenv install --dev
+    $ pipenv shell
+    (python-gvm)$ git commit
+
 ## License
 
-Copyright (C) 2017-2018 [Greenbone Networks GmbH](https://www.greenbone.net/)
+Copyright (C) 2017-2019 [Greenbone Networks GmbH](https://www.greenbone.net/)
 
 Licensed under the [GNU General Public License v3.0 or later](LICENSE).

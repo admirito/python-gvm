@@ -19,24 +19,16 @@
 import unittest
 
 from gvm.errors import RequiredArgument
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from . import Gmpv7TestCase
 
 
-class GmpCloneScheduleTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
+class GmpCloneScheduleTestCase(Gmpv7TestCase):
     def test_clone(self):
         self.gmp.clone_schedule('a1')
 
         self.connection.send.has_been_called_with(
-            '<create_schedule>'
-            '<copy>a1</copy>'
-            '</create_schedule>'
+            '<create_schedule>' '<copy>a1</copy>' '</create_schedule>'
         )
 
     def test_missing_id(self):

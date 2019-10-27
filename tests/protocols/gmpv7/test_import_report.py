@@ -19,12 +19,11 @@
 import unittest
 
 from gvm.errors import RequiredArgument, InvalidArgument
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from . import Gmpv7TestCase
 
 
-class GmpImportReportTestCase(unittest.TestCase):
+class GmpImportReportTestCase(Gmpv7TestCase):
 
     TASK_ID = '00000000-0000-0000-0000-000000000001'
     TASK_NAME = 'unit test task'
@@ -39,22 +38,16 @@ class GmpImportReportTestCase(unittest.TestCase):
         '</result></results></report>'
     )
 
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
     def test_import_report_with_task_id(self):
-        self.gmp.import_report(
-            self.REPORT_XML_STRING,
-            task_id=self.TASK_ID,
-        )
+        self.gmp.import_report(self.REPORT_XML_STRING, task_id=self.TASK_ID)
 
         self.connection.send.has_been_called_with(
             '<create_report>'
             '<task id="{task}"/>'
             '{report}'
             '</create_report>'.format(
-                task=self.TASK_ID, report=self.REPORT_XML_STRING)
+                task=self.TASK_ID, report=self.REPORT_XML_STRING
+            )
         )
 
     def test_import_report_with_task_name(self):
@@ -72,51 +65,45 @@ class GmpImportReportTestCase(unittest.TestCase):
             '</task>'
             '{report}'
             '</create_report>'.format(
-                task=self.TASK_NAME, comment=self.COMMENT,
-                report=self.REPORT_XML_STRING)
+                task=self.TASK_NAME,
+                comment=self.COMMENT,
+                report=self.REPORT_XML_STRING,
+            )
         )
 
     def test_import_report_missing_report(self):
         with self.assertRaises(RequiredArgument):
             self.gmp.import_report(
-                None,
-                task_name=self.TASK_NAME,
-                task_comment=self.COMMENT,
+                None, task_name=self.TASK_NAME, task_comment=self.COMMENT
             )
 
         with self.assertRaises(RequiredArgument):
             self.gmp.import_report(
-                '',
-                task_name=self.TASK_NAME,
-                task_comment=self.COMMENT,
+                '', task_name=self.TASK_NAME, task_comment=self.COMMENT
             )
 
     def test_import_report_missing_task(self):
         with self.assertRaises(RequiredArgument):
-            self.gmp.import_report(
-                self.REPORT_XML_STRING,
-            )
+            self.gmp.import_report(self.REPORT_XML_STRING)
 
     def test_import_report_invalid_xml(self):
         with self.assertRaises(InvalidArgument):
             self.gmp.import_report(
-                'Foo', # not root tag
+                'Foo',  # not root tag
                 task_name=self.TASK_NAME,
                 task_comment=self.COMMENT,
             )
 
         with self.assertRaises(InvalidArgument):
             self.gmp.import_report(
-                '<Foo>', # missing closing tag
+                '<Foo>',  # missing closing tag
                 task_name=self.TASK_NAME,
                 task_comment=self.COMMENT,
             )
 
     def test_import_report_with_in_assets(self):
         self.gmp.import_report(
-            self.REPORT_XML_STRING,
-            task_name=self.TASK_NAME,
-            in_assets=False,
+            self.REPORT_XML_STRING, task_name=self.TASK_NAME, in_assets=False
         )
 
         self.connection.send.has_been_called_with(
@@ -127,14 +114,12 @@ class GmpImportReportTestCase(unittest.TestCase):
             '<in_assets>0</in_assets>'
             '{report}'
             '</create_report>'.format(
-                task=self.TASK_NAME,
-                report=self.REPORT_XML_STRING)
+                task=self.TASK_NAME, report=self.REPORT_XML_STRING
+            )
         )
 
         self.gmp.import_report(
-            self.REPORT_XML_STRING,
-            task_name=self.TASK_NAME,
-            in_assets=True,
+            self.REPORT_XML_STRING, task_name=self.TASK_NAME, in_assets=True
         )
 
         self.connection.send.has_been_called_with(
@@ -145,8 +130,8 @@ class GmpImportReportTestCase(unittest.TestCase):
             '<in_assets>1</in_assets>'
             '{report}'
             '</create_report>'.format(
-                task=self.TASK_NAME,
-                report=self.REPORT_XML_STRING)
+                task=self.TASK_NAME, report=self.REPORT_XML_STRING
+            )
         )
 
 

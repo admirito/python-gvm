@@ -19,28 +19,24 @@
 import unittest
 
 from gvm.errors import GvmError
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from . import Gmpv7TestCase
 
 
-class GmpDeleteTaskTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
+class GmpDeleteTaskTestCase(Gmpv7TestCase):
     def test_delete(self):
         self.gmp.delete_task('a1')
 
         self.connection.send.has_been_called_with(
-            '<delete_task task_id="a1" ultimate="0"/>')
+            '<delete_task task_id="a1" ultimate="0"/>'
+        )
 
     def test_delete_ultimate(self):
         self.gmp.delete_task('a1', ultimate=True)
 
         self.connection.send.has_been_called_with(
-            '<delete_task task_id="a1" ultimate="1"/>')
+            '<delete_task task_id="a1" ultimate="1"/>'
+        )
 
     def test_missing_id(self):
         with self.assertRaises(GvmError):

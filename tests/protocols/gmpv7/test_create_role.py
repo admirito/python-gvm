@@ -19,24 +19,16 @@
 import unittest
 
 from gvm.errors import RequiredArgument
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from . import Gmpv7TestCase
 
 
-class GmpCreateRoleTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
+class GmpCreateRoleTestCase(Gmpv7TestCase):
     def test_create_role(self):
         self.gmp.create_role(name='foo')
 
         self.connection.send.has_been_called_with(
-            '<create_role>'
-            '<name>foo</name>'
-            '</create_role>'
+            '<create_role>' '<name>foo</name>' '</create_role>'
         )
 
     def test_missing_name(self):
@@ -60,9 +52,7 @@ class GmpCreateRoleTestCase(unittest.TestCase):
         self.gmp.create_role(name='foo', users=[])
 
         self.connection.send.has_been_called_with(
-            '<create_role>'
-            '<name>foo</name>'
-            '</create_role>'
+            '<create_role>' '<name>foo</name>' '</create_role>'
         )
 
         self.gmp.create_role(name='foo', users=['u1', 'u2'])

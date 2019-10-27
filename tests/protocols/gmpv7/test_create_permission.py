@@ -19,19 +19,17 @@
 import unittest
 
 from gvm.errors import RequiredArgument, InvalidArgument
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from gvm.protocols.gmpv7 import PermissionSubjectType, EntityType
+
+from . import Gmpv7TestCase
 
 
-class GmpCreatePermissionTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
+class GmpCreatePermissionTestCase(Gmpv7TestCase):
     def test_create_permission(self):
-        self.gmp.create_permission('foo', subject_id='u1', subject_type='user')
+        self.gmp.create_permission(
+            'foo', subject_id='u1', subject_type=PermissionSubjectType.USER
+        )
 
         self.connection.send.has_been_called_with(
             '<create_permission>'
@@ -45,37 +43,52 @@ class GmpCreatePermissionTestCase(unittest.TestCase):
     def test_create_permission_missing_name(self):
         with self.assertRaises(RequiredArgument):
             self.gmp.create_permission(
-                None, subject_id='u1', subject_type='user')
+                None, subject_id='u1', subject_type=PermissionSubjectType.USER
+            )
 
         with self.assertRaises(RequiredArgument):
             self.gmp.create_permission(
-                '', subject_id='u1', subject_type='user')
+                '', subject_id='u1', subject_type=PermissionSubjectType.USER
+            )
 
     def test_create_permission_missing_subject_id(self):
         with self.assertRaises(RequiredArgument):
             self.gmp.create_permission(
-                'create_task', subject_id=None, subject_type='user')
+                'create_task',
+                subject_id=None,
+                subject_type=PermissionSubjectType.USER,
+            )
 
         with self.assertRaises(RequiredArgument):
             self.gmp.create_permission(
-                'create_task', subject_id='', subject_type='user')
+                'create_task',
+                subject_id='',
+                subject_type=PermissionSubjectType.USER,
+            )
 
     def test_create_permission_invalid_subject_type(self):
         with self.assertRaises(InvalidArgument):
             self.gmp.create_permission(
-                'create_task', subject_id='u1', subject_type='')
+                'create_task', subject_id='u1', subject_type=''
+            )
 
         with self.assertRaises(InvalidArgument):
             self.gmp.create_permission(
-                'create_task', subject_id='u1', subject_type=None)
+                'create_task', subject_id='u1', subject_type=None
+            )
 
         with self.assertRaises(InvalidArgument):
             self.gmp.create_permission(
-                'create_task', subject_id='u1', subject_type='foo')
+                'create_task', subject_id='u1', subject_type='foo'
+            )
 
     def test_create_permission_with_comment(self):
         self.gmp.create_permission(
-            'create_task', subject_id='u1', subject_type='user', comment='foo')
+            'create_task',
+            subject_id='u1',
+            subject_type=PermissionSubjectType.USER,
+            comment='foo',
+        )
 
         self.connection.send.has_been_called_with(
             '<create_permission>'
@@ -90,19 +103,29 @@ class GmpCreatePermissionTestCase(unittest.TestCase):
     def test_create_permission_missing_resource_id(self):
         with self.assertRaises(RequiredArgument):
             self.gmp.create_permission(
-                'create_task', subject_id='u1', subject_type='user',
-                resource_type='task')
+                'create_task',
+                subject_id='u1',
+                subject_type=PermissionSubjectType.USER,
+                resource_type='task',
+            )
 
     def test_create_permission_missing_resource_type(self):
         with self.assertRaises(RequiredArgument):
             self.gmp.create_permission(
-                'create_task', subject_id='u1', subject_type='user',
-                resource_id='t1')
+                'create_task',
+                subject_id='u1',
+                subject_type=PermissionSubjectType.USER,
+                resource_id='t1',
+            )
 
     def test_create_permission_with_resource(self):
         self.gmp.create_permission(
-            'create_task', subject_id='u1', subject_type='user',
-            resource_id='t1', resource_type='task')
+            'create_task',
+            subject_id='u1',
+            subject_type=PermissionSubjectType.USER,
+            resource_id='t1',
+            resource_type=EntityType.TASK,
+        )
 
         self.connection.send.has_been_called_with(
             '<create_permission>'

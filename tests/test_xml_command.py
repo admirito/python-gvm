@@ -18,11 +18,12 @@
 
 import unittest
 
+from collections import OrderedDict
+
 from gvm.xml import XmlCommand
 
 
 class XmlCommandTestCase(unittest.TestCase):
-
     def test_should_create_command(self):
         cmd = XmlCommand('foo')
 
@@ -48,7 +49,7 @@ class XmlCommandTestCase(unittest.TestCase):
 
     def test_should_allow_to_set_attributes(self):
         cmd = XmlCommand('foo')
-        cmd.set_attributes({'bar': '1', 'baz': '2'})
+        cmd.set_attributes(OrderedDict([('bar', '1'), ('baz', '2')]))
 
         self.assertEqual(cmd.to_string(), '<foo bar="1" baz="2"/>')
 

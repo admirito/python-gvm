@@ -19,24 +19,16 @@
 import unittest
 
 from gvm.errors import RequiredArgument
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from . import Gmpv7TestCase
 
 
-class GmpCloneTagTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
+class GmpCloneTagTestCase(Gmpv7TestCase):
     def test_clone(self):
         self.gmp.clone_tag('a1')
 
         self.connection.send.has_been_called_with(
-            '<create_tag>'
-            '<copy>a1</copy>'
-            '</create_tag>'
+            '<create_tag>' '<copy>a1</copy>' '</create_tag>'
         )
 
     def test_missing_id(self):

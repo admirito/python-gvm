@@ -19,22 +19,17 @@
 import unittest
 
 from gvm.errors import GvmError
-from gvm.protocols.gmpv7 import Gmp
 
-from .. import MockConnection
+from . import Gmpv7TestCase
 
 
-class GmpVerifyScannerTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.connection = MockConnection()
-        self.gmp = Gmp(self.connection)
-
+class GmpVerifyScannerTestCase(Gmpv7TestCase):
     def test_verify(self):
         self.gmp.verify_scanner('a1')
 
         self.connection.send.has_been_called_with(
-            '<verify_scanner scanner_id="a1"/>')
+            '<verify_scanner scanner_id="a1"/>'
+        )
 
     def test_missing_id(self):
         with self.assertRaises(GvmError):
