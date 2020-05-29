@@ -2,9 +2,9 @@ Source: python-gvm
 Section: python
 Priority: optional
 Maintainer: Mohammad Razavi <mrazavi64@gmail.com>
-Build-Depends: debhelper (>= 10), dh-python, python3-all, python3-setuptools, python3-lxml, python3-defusedxml, python3-paramiko
+Build-Depends: debhelper-compat (= 12), dh-python, python3-all, python3-setuptools, python3-lxml, python3-defusedxml, python3-paramiko
 # python3-sphinx, python3-sphinxcontrib.napoleon
-Standards-Version: 4.1.2
+Standards-Version: 4.4.1
 Homepage: https://community.greenbone.net/
 X-Python3-Version: >= 3.2
 Vcs-Git: https://github.com/admirito/python-gvm.git
