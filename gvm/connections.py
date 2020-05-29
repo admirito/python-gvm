@@ -38,7 +38,9 @@ BUF_SIZE = 16 * 1024
 DEFAULT_READ_TIMEOUT = 60  # in seconds
 DEFAULT_TIMEOUT = 60  # in seconds
 DEFAULT_GVM_PORT = 9390
-DEFAULT_UNIX_SOCKET_PATH = "/usr/local/var/run/gvmd.sock"
+DEFAULT_UNIX_SOCKET_PATH = "/var/run/gvmd.sock"
+DEFAULT_SSH_PORT = 22
+DEFAULT_HOSTNAME = '127.0.0.1'
 MAX_SSH_DATA_LENGTH = 4095
 
 
@@ -185,8 +187,8 @@ class SSHConnection(GvmConnection):
         self,
         *,
         timeout: Optional[int] = DEFAULT_TIMEOUT,
-        hostname: Optional[str] = "127.0.0.1",
-        port: Optional[int] = 22,
+        hostname: Optional[str] = DEFAULT_HOSTNAME,
+        port: Optional[int] = DEFAULT_SSH_PORT,
         username: Optional[str] = "gmp",
         password: Optional[str] = ""
     ):
@@ -275,7 +277,7 @@ class TLSConnection(GvmConnection):
         certfile: Optional[str] = None,
         cafile: Optional[str] = None,
         keyfile: Optional[str] = None,
-        hostname: Optional[str] = "127.0.0.1",
+        hostname: Optional[str] = DEFAULT_HOSTNAME,
         port: Optional[int] = DEFAULT_GVM_PORT,
         password: Optional[str] = None,
         timeout: Optional[int] = DEFAULT_TIMEOUT
@@ -324,7 +326,7 @@ class UnixSocketConnection(GvmConnection):
     direct communicating UNIX-Socket
 
     Arguments:
-        path: Path to the socket. Default is "/usr/local/var/run/gvmd.sock".
+        path: Path to the socket. Default is "/var/run/gvmd.sock".
         timeout: Timeout in seconds for the connection. Default is 60 seconds.
     """
 
@@ -350,6 +352,10 @@ class UnixSocketConnection(GvmConnection):
         except FileNotFoundError:
             raise GvmError(
                 "Socket {path} does not exist".format(path=self.path)
+            ) from None
+        except ConnectionError:
+            raise GvmError(
+                "Could not connect to socket {}".format(self.path)
             ) from None
 
 

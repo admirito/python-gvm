@@ -1,50 +1,28 @@
-# Release instructions
+# Release Instructions
 
-Before creating a new release please do a careful consideration about the
-version number for the new release. We are following [Semantic Versioning](https://semver.org/)
-and [PEP440](https://www.python.org/dev/peps/pep-0440/).
+Before creating a new release carefully consider the version number of the new
+release. We are following [Semantic Versioning](https://semver.org/) and
+[PEP440](https://www.python.org/dev/peps/pep-0440/).
 
-* Install twine for pypi package uploads and update setuptools, pipenv and wheel packages
+## Preparing the Required Python Packages
 
-  ```sh
-  python3 -m pip install --user --upgrade twine setuptools wheel pipenv
-  ```
-
-* Fetch upstream changes and create release branch
+* Install twine for pypi package uploads
 
   ```sh
-  git fetch upstream
-  git checkout -b create-new-release upstream/master
+  python3 -m pip install --user --upgrade twine
   ```
 
-* Open [gvm/__init__.py](https://github.com/greenbone/python-gvm/blob/master/gvm/__init__.py)
-  and increment the version number.
+## Configuring the Access to the Python Package Index (PyPI)
 
-* Update [CHANGELOG.md](https://github.com/greenbone/python-gvm/blob/master/CHANGELOG.md)
-  * Change [unreleased] to new release version
-  * Add a release date
-  * Update reference to Github diff
+*Note:* This is only necessary for users performing the release process for the
+first time.
 
-* Create a source and wheel distribution
+* Create an account at [Test PyPI](https://packaging.python.org/guides/using-testpypi/).
 
-  ```sh
-  rm -rf dist build python_gvm.egg-info
-  python3 setup.py sdist bdist_wheel
-  ```
+* Create an account at [PyPI](https://pypi.org/).
 
-* Create a git commit
-
-  ```sh
-  git add .
-  git commit -m "Prepare release <version>"
-  ```
-* Create a pypi configuration file
-
-  ```sh
-  vim ~/.pypirc
-  ```
-
-  with the following content (Note: `<username>` must be replaced)
+* Create a pypi configuration file `~/.pypirc` with the following content (Note:
+  `<username>` must be replaced):
 
   ```ini
   [distutils]
@@ -60,97 +38,163 @@ and [PEP440](https://www.python.org/dev/peps/pep-0440/).
   username = <username>
   ```
 
-* Create an account at [Test PyPI](https://packaging.python.org/guides/using-testpypi/)
+## Prepare testing the Release
 
-* Upload the archives in dist to [Test PyPI](https://test.pypi.org/)
+* Fetch upstream changes and create a branch:
+
+  ```sh
+  git fetch upstream
+  git checkout -b create-new-release upstream/master
+  ```
+
+* Get the current version number
+
+  ```sh
+  poetry run python -m pontos.version show
+  ```
+
+* Update the version number to some alpha version e.g.
+
+  ```sh
+  poetry run python -m pontos.version update 1.2.3a1
+  ```
+
+## Uploading to the PyPI Test Instance
+
+* Create a source and wheel distribution:
+
+  ```sh
+  rm -rf dist build python_gvm.egg-info
+  poetry build
+  ```
+
+* Upload the archives in `dist` to [Test PyPI](https://test.pypi.org/):
 
   ```sh
   twine upload -r testpypi dist/*
   ```
 
-* Check if the package is available at https://test.pypi.org/project/python-gvm
+* Check if the package is available at <https://test.pypi.org/project/python-gvm>.
 
-* Create a test directory
+## Testing the Uploaded Package
+
+* Create a test directory:
 
   ```sh
   mkdir python-gvm-install-test
   cd python-gvm-install-test
-  pipenv run pip install --pre -I --extra-index-url https://test.pypi.org/simple/ python-gvm
+  python3 -m venv test-env
+  source test-env/bin/activate
+  pip install -U pip  # ensure the environment uses a recent version of pip
+  pip install --pre -I --extra-index-url https://test.pypi.org/simple/ python-gvm
   ```
 
-* Check install version with a python script
+* Check install version with a Python script:
 
   ```sh
-  pipenv run python -c "from gvm import get_version; print(get_version())"
+  python3 -c "from gvm import __version__; print(__version__)"
   ```
 
-* Remove test environment
+* Remove test environment:
 
   ```sh
-  pipenv --rm
+  deactivate
   cd ..
   rm -rf python-gvm-install-test
   ```
 
-* Create a release PR
+## Prepare the Release
+
+* Determine new release version number
+
+  If the output is something like  `1.2.3.dev1` or `1.2.3a1`, the new version
+  should be `1.2.3`.
+
+* Update to new version number (`<new-version>` must be replaced by the version
+  from the last step)
+
+  ```sh
+  cd path/to/git/clone/of/python-gvm
+  poetry run python -m pontos.version update <new-version>
+  ```
+
+* Update the `CHANGELOG.md` file:
+  * Change `[unreleased]` to new release version.
+  * Add a release date.
+  * Update reference to Github diff.
+  * Remove empty sub sections like *Deprecated*.
+
+* Create a git commit:
+
+  ```sh
+  git add .
+  git commit -m "Prepare release <version>"
+  ```
+
+## Performing the Release on GitHub
+
+* Create a pull request (PR) for the earlier commit:
 
   ```sh
   git push origin
   ```
-  Open GitHub and create a PR against https://github.com/greenbone/python-gvm
+  Open GitHub and create a PR against <https://github.com/greenbone/python-gvm>.
 
-* Update after PR is merged
+* Ask another developer/maintainer to review and merge the PR.
+
+* Once the PR is merged, update the local `master` branch:
 
   ```sh
   git fetch upstream
-  git rebase upstream/master
+  git rebase upstream/master master
   ```
 
-* Create a git tag
+* Create a git tag:
 
   ```sh
   git tag v<version>
   ```
 
-  or even signed with your gpg key
+  Or even a tag signed with a personal GPG key:
 
   ```sh
-  git tag -s v<version>
+  git tag --sign --message "Tagging the <version> release" v<version>
   ```
 
-* Create final distribution files
+* Push changes and tag to Github:
 
   ```sh
-  rm -rf dist build python_gvm.egg-info
-  python3 setup.py sdist bdist_wheel
-  ```
-* Create an account at [PyPI](https://pypi.org/) if not exist already
-
-* Upload to real [PyPI](https://pypi.org/)
-
-  ```sh
-  twine upload dist/*
+  git push --tags upstream
   ```
 
-* Check if new version is available at https://pypi.org/project/python-gvm
+## Uploading to the 'real' PyPI
 
-* Update version in [gvm/__init__.py](https://github.com/greenbone/python-gvm/blob/master/gvm/__init__.py)
+* Uploading to PyPI is done automatically by pushing a git tag via CircleCI
 
-  Use a development version like `(1, 0, 0, 'beta', 1, 'dev', 1)` or
-  `(1, 1, 0, 'dev', 1)`
+* Check if new version is available at <https://pypi.org/project/python-gvm>.
 
-* Create a commit
+## Bumping `master` Branch to the Next Version
+
+
+* Update to a Development Version
+
+  The next version should contain an incremented minor version and a dev suffix
+  e.g. 2.3.0.dev1
 
   ```sh
+  poetry run python -m pontos.version update <next-dev-version>
+  ```
+
+* Create a commit for the version bump:
+
+  ```sh
+  git add .
   git commit -m "Update version after <version> release"
+  git push upstream
   ```
 
-* Push changes and tag to Github
+## Announcing the Release
 
-  ```sh
-  git push --tags upstream master
-  ```
-
-* Create a Github release
+* Create a Github release:
 
   See https://help.github.com/articles/creating-releases/

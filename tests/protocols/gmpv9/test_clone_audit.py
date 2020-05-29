@@ -18,26 +18,26 @@
 
 import unittest
 
-from gvm.utils import get_version_string
+from gvm.errors import RequiredArgument
+
+from . import Gmpv9TestCase
 
 
-class TestGetVersionString(unittest.TestCase):
-    def test_simple_version(self):
-        self.assertEqual(get_version_string((1, 0)), '1.0')
+class GmpCloneAuditTestCase(Gmpv9TestCase):
+    def test_clone(self):
+        self.gmp.clone_audit('a1')
 
-    def test_release_patch_version(self):
-        self.assertEqual(get_version_string((1, 0, 1)), '1.0.1')
-
-    def test_dev_version(self):
-        self.assertEqual(get_version_string((1, 0, 1, 'dev', 1)), '1.0.1.dev1')
-
-    def test_beta_version(self):
-        self.assertEqual(
-            get_version_string((1, 0, 1, 'beta', 1)), '1.0.1.beta1'
+        self.connection.send.has_been_called_with(
+            '<create_task><copy>a1</copy></create_task>'
         )
 
-    def test_dev_after_beta_version(self):
-        self.assertEqual(
-            get_version_string((1, 0, 1, 'beta', 2, 'dev', 1)),
-            '1.0.1.beta2.dev1',
-        )
+    def test_missing_id(self):
+        with self.assertRaises(RequiredArgument):
+            self.gmp.clone_audit('')
+
+        with self.assertRaises(RequiredArgument):
+            self.gmp.clone_audit(None)
+
+
+if __name__ == '__main__':
+    unittest.main()

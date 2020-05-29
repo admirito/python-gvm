@@ -18,13 +18,7 @@
 """
 Main module of python-gvm.
 """
-
-from pkg_resources import safe_version
-
-VERSION = (1, 0, 0)
-"""
-Current Version of python-gvm as a tuple
-"""
+from .__version__ import __version__
 
 
 def get_version() -> str:
@@ -37,5 +31,4 @@ def get_version() -> str:
     .. _PEP440:
        https://www.python.org/dev/peps/pep-0440
     """
-    str_version = '.'.join([str(v) for v in VERSION])
-    return safe_version(str_version)
+    return __version__

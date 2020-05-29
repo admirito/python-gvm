@@ -3,7 +3,7 @@
 # Greenbone Vulnerability Management Python Library <!-- omit in toc -->
 
 [![GitHub releases](https://img.shields.io/github/release-pre/greenbone/python-gvm.svg)](https://github.com/greenbone/python-gvm/releases)
-[![PyPI release](https://img.shields.io/pypi/v/gvm.svg)](https://pypi.org/project/python-gvm/)
+[![PyPI release](https://img.shields.io/pypi/v/python-gvm.svg)](https://pypi.org/project/python-gvm/)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/greenbone/python-gvm/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/greenbone/python-gvm/?branch=master)
 [![code test coverage](https://codecov.io/gh/greenbone/python-gvm/branch/master/graph/badge.svg)](https://codecov.io/gh/greenbone/python-gvm)
 [![CircleCI](https://circleci.com/gh/greenbone/python-gvm/tree/master.svg?style=svg)](https://circleci.com/gh/greenbone/python-gvm/tree/master)
@@ -16,15 +16,15 @@ Greenbone Management Protocol (GMP) and Open Scanner Protocol (OSP).
 
 ## Table of Contents <!-- omit in toc -->
 
-- [Documentation](#Documentation)
-- [Installation](#Installation)
-  - [Requirements](#Requirements)
-  - [Install using pip](#Install-using-pip)
-- [Example](#Example)
-- [Support](#Support)
-- [Maintainer](#Maintainer)
-- [Contributing](#Contributing)
-- [License](#License)
+- [Documentation](#documentation)
+- [Installation](#installation)
+  - [Requirements](#requirements)
+  - [Install using pip](#install-using-pip)
+- [Example](#example)
+- [Support](#support)
+- [Maintainer](#maintainer)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Documentation
 
@@ -41,6 +41,10 @@ Python 3.5 and later is supported.
 
 ### Install using pip
 
+pip 19.0 or later is required.
+
+> **Note**: All commands listed here use the general tool names. If some of these tools are provided by your distribution, you may need to explicitly use the Python 3 version of the tool, e.g. **`pip3`**.
+
 You can install the latest stable release of python-gvm from the Python Package
 Index using [pip](https://pip.pypa.io/):
 
@@ -50,29 +54,29 @@ Index using [pip](https://pip.pypa.io/):
 
 ```python3
 from gvm.connections import UnixSocketConnection
-from gvm.protocols.latest import Gmp
+from gvm.protocols.gmp import Gmp
 from gvm.transforms import EtreeTransform
 from gvm.xml import pretty_print
 
 connection = UnixSocketConnection()
 transform = EtreeTransform()
-gmp = Gmp(connection, transform=transform)
 
-# Retrieve GMP version supported by the remote daemon
-version = gmp.get_version()
+with Gmp(connection, transform=transform) as gmp:
+    # Retrieve GMP version supported by the remote daemon
+    version = gmp.get_version()
 
-# Prints the XML in beautiful form
-pretty_print(version)
+    # Prints the XML in beautiful form
+    pretty_print(version)
 
-# Login
-gmp.authenticate('foo', 'bar')
+    # Login
+    gmp.authenticate('foo', 'bar')
 
-# Retrieve all tasks
-tasks = gmp.get_tasks()
+    # Retrieve all tasks
+    tasks = gmp.get_tasks()
 
-# Get names of tasks
-task_names = tasks.xpath('task/name/text()')
-pretty_print(task_names)
+    # Get names of tasks
+    task_names = tasks.xpath('task/name/text()')
+    pretty_print(task_names)
 ```
 
 ## Support
@@ -94,26 +98,26 @@ Your contributions are highly appreciated. Please
 For bigger changes, please discuss it first in the
 [issues](https://github.com/greenbone/python-gvm/issues).
 
-For development you should use [pipenv](https://pipenv.readthedocs.io/en/latest/)
+For development you should use [poetry](https://python-poetry.org)
 to keep you python packages separated in different environments. First install
-pipenv via pip
+poetry via pip
 
-    pip install --user pipenv
+    pip install --user poetry
 
 Afterwards run
 
-    pipenv install --dev
+    poetry install
 
-in the checkout directory of python-gvm (the directory containing the Pipfile)
-to install all dependencies including the packages only required for
-development.
+in the checkout directory of python-gvm (the directory containing the
+`pyproject.toml` file) to install all dependencies including the packages only
+required for development.
 
-Please create your git commits from within the Python environment to apply our
-[git hooks](https://github.com/greenbone/autohooks).
+The python-gvm repository uses [autohooks](https://github.com/greenbone/autohooks)
+to apply linting and auto formatting via git hooks. Please ensure the git hooks
+are active.
 
-    $ pipenv install --dev
-    $ pipenv shell
-    (python-gvm)$ git commit
+    $ poetry install
+    $ poetry run autohooks activate --force
 
 ## License
 
