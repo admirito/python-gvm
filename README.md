@@ -35,20 +35,26 @@ Please always take a look at the documentation for further details. This
 
 ## Installation
 
+### Version
+
+Please consider to always use the **newest** version of `gvm-tools` and `python-gvm`.
+We freqently update this projects to add features and keep them free from bugs.
+This is why installing `python-gvm` using pip is recommended.
+
+The current release of `python-gvm` can be used with all supported GOS versions.
+
 ### Requirements
 
-Python 3.5 and later is supported.
+Python 3.7 and later is supported.
 
 ### Install using pip
 
 pip 19.0 or later is required.
 
-> **Note**: All commands listed here use the general tool names. If some of these tools are provided by your distribution, you may need to explicitly use the Python 3 version of the tool, e.g. **`pip3`**.
-
 You can install the latest stable release of python-gvm from the Python Package
 Index using [pip](https://pip.pypa.io/):
 
-    pip install --user python-gvm
+    python3 -m pip install --user python-gvm
 
 ## Example
 
@@ -102,7 +108,7 @@ For development you should use [poetry](https://python-poetry.org)
 to keep you python packages separated in different environments. First install
 poetry via pip
 
-    pip install --user poetry
+    python3 -m pip install --user poetry
 
 Afterwards run
 
@@ -121,6 +127,6 @@ are active.
 
 ## License
 
-Copyright (C) 2017-2019 [Greenbone Networks GmbH](https://www.greenbone.net/)
+Copyright (C) 2017-2020 [Greenbone Networks GmbH](https://www.greenbone.net/)
 
 Licensed under the [GNU General Public License v3.0 or later](LICENSE).

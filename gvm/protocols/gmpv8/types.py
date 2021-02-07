@@ -33,11 +33,13 @@ from gvm.protocols.gmpv7.types import (
     InfoType,
     PermissionSubjectType,
     PortRangeType,
+    ReportFormatType,
     ScannerType,
     SeverityLevel,
     SnmpAuthAlgorithm,
     SnmpPrivacyAlgorithm,
     TimeUnit,
+    UserAuthType,
     get_alert_condition_from_string,
     get_alert_event_from_string,
     get_alert_method_from_string,
@@ -49,10 +51,13 @@ from gvm.protocols.gmpv7.types import (
     get_info_type_from_string,
     get_permission_subject_type_from_string,
     get_port_range_type_from_string,
+    get_report_format_id_from_string,
     get_severity_level_from_string,
     get_scanner_type_from_string,
     get_snmp_auth_algorithm_from_string,
     get_snmp_privacy_algorithm_from_string,
+    get_time_unit_from_string,
+    get_user_auth_type_from_string,
 )
 
 
@@ -71,12 +76,14 @@ __all__ = [
     "InfoType",
     "PermissionSubjectType",
     "PortRangeType",
+    "ReportFormatType",
     "ScannerType",
     "SeverityLevel",
     "SnmpAuthAlgorithm",
     "SnmpPrivacyAlgorithm",
     "TicketStatus",
     "TimeUnit",
+    "UserAuthType",
     "get_alert_condition_from_string",
     "get_alert_event_from_string",
     "get_alert_method_from_string",
@@ -91,16 +98,19 @@ __all__ = [
     "get_info_type_from_string",
     "get_permission_subject_type_from_string",
     "get_port_range_type_from_string",
+    "get_report_format_id_from_string",
     "get_scanner_type_from_string",
     "get_severity_level_from_string",
     "get_snmp_auth_algorithm_from_string",
     "get_snmp_privacy_algorithm_from_string",
     "get_ticket_status_from_string",
+    "get_time_unit_from_string",
+    "get_user_auth_type_from_string",
 ]
 
 
 class EntityType(Enum):
-    """ Enum for entity types """
+    """Enum for entity types """
 
     AGENT = "agent"
     ALERT = "alert"
@@ -140,7 +150,7 @@ class EntityType(Enum):
 def get_entity_type_from_string(
     entity_type: Optional[str],
 ) -> Optional[EntityType]:
-    """ Convert a entity type string to an actual EntityType instance
+    """Convert a entity type string to an actual EntityType instance
 
     Arguments:
         entity_type: Entity type string to convert to a EntityType
@@ -163,11 +173,11 @@ def get_entity_type_from_string(
         raise InvalidArgument(
             argument='entity_type',
             function=get_entity_type_from_string.__name__,
-        )
+        ) from None
 
 
 class FilterType(Enum):
-    """ Enum for filter types """
+    """Enum for filter types """
 
     AGENT = "agent"
     ALERT = "alert"
@@ -199,7 +209,7 @@ class FilterType(Enum):
 def get_filter_type_from_string(
     filter_type: Optional[str],
 ) -> Optional[FilterType]:
-    """ Convert a filter type string to an actual FilterType instance
+    """Convert a filter type string to an actual FilterType instance
 
     Arguments:
         filter_type (str): Filter type string to convert to a FilterType
@@ -225,7 +235,7 @@ def get_filter_type_from_string(
         raise InvalidArgument(
             argument='filter_type',
             function=get_filter_type_from_string.__name__,
-        )
+        ) from None
 
 
 class CredentialType(Enum):
@@ -243,8 +253,7 @@ class CredentialType(Enum):
 def get_credential_type_from_string(
     credential_type: Optional[str],
 ) -> Optional[CredentialType]:
-    """ Convert a credential type string into a CredentialType instance
-    """
+    """Convert a credential type string into a CredentialType instance"""
     if not credential_type:
         return None
 
@@ -254,11 +263,11 @@ def get_credential_type_from_string(
         raise InvalidArgument(
             argument='credential_type',
             function=get_credential_type_from_string.__name__,
-        )
+        ) from None
 
 
 class TicketStatus(Enum):
-    """ Enum for ticket status """
+    """Enum for ticket status """
 
     OPEN = 'Open'
     FIXED = 'Fixed'
@@ -268,8 +277,7 @@ class TicketStatus(Enum):
 def get_ticket_status_from_string(
     ticket_status: Optional[str],
 ) -> Optional[TicketStatus]:
-    """ Convert a ticket status string into a TicketStatus instance
-    """
+    """Convert a ticket status string into a TicketStatus instance"""
     if not ticket_status:
         return None
 
@@ -279,4 +287,4 @@ def get_ticket_status_from_string(
         raise InvalidArgument(
             argument='ticket_status',
             function=get_ticket_status_from_string.__name__,
-        )
+        ) from None

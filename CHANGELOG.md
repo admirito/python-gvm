@@ -5,6 +5,180 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [21.1.3] - 2021-01-27
+### Added
+* Added protocol version "next" and GMP 21.04 doc [#384](https://github.com/greenbone/python-gvm/pull/384)
+
+### Fixed
+* Add missing ReportFormatType to GMP 21.04 [#385](https://github.com/greenbone/python-gvm/pull/385)
+
+[21.1.3]: https://github.com/greenbone/python-gvm/compare/v21.1.2...v21.1.3
+
+## [21.1.2] - 2021-01-27
+### Added
+* Added allow_simultaneous_ips param for targets [#380](https://github.com/greenbone/python-gvm/pull/380)
+
+### Removed
+* dropped the GMP Scanner (4) from `ScannerTypes` for v21.4 [#383](https://github.com/greenbone/python-gvm/pull/383)
+
+### Fixed
+* removing `timeout` from `get_nvt()` [#376](https://github.com/greenbone/python-gvm/pull/376)
+* Add `ReportFormatType` and `get_report_format_id_from_string` to `latest.py`, so it is usable with `import gvm.protcols.latest`[#381](https://github.com/greenbone/python-gvm/pull/381)
+* Fixing `import_report()` for v9 and v20.8 and newer, removed the `task_name` and `task_comment` parameters, that do not work anymore [#377](https://github.com/greenbone/python-gvm/pull/377)
+
+[21.1.2]: https://github.com/greenbone/python-gvm/compare/v21.1.1...v21.1.2
+
+## [21.1.1] - 2021-01-05
+### Fixed
+* Fixed release issues, through rerelease.
+
+[21.1.1]: https://github.com/greenbone/python-gvm/compare/v21.1.0...v21.1.1
+
+## [21.1.0] - 2021-01-05
+### Added
+* CI tests Python 3.9 now. [#367](https://github.com/greenbone/python-gvm/pull/367)
+
+### Deprecated
+* Dropped Python 3.5 and Python 3.6 support. Python 3.7+ is required now. [#367](https://github.com/greenbone/python-gvm/pull/367)
+
+### Fixed
+* Add missing types and functions to "latest" GMP [#369](https://github.com/greenbone/python-gvm/pull/369)
+
+[21.1.0]: https://github.com/greenbone/python-gvm/compare/v20.12.1...v21.1.0
+
+## [20.12.1] - 2020-12-16
+### Added
+* Added AUDIT and POLICY to EntityType enum [#353](https://github.com/greenbone/python-gvm/pull/353)
+
+### Changed
+* Support "all" argument in modify_scan_config_set_family_selection [#368](https://github.com/greenbone/python-gvm/pull/368)
+* added the `audits` parameter to `get_policy` [#345](https://github.com/greenbone/python-gvm/pull/345)
+* Update get_aggregates params in GMP 9.0 and newer [#359](https://github.com/greenbone/python-gvm/pull/359)
+
+### Fixed
+* added `get_info_list` to v20.08, so it works as expected with new `InfoType` [#362](https://github.com/greenbone/python-gvm/pull/362)
+
+[20.12.1]: https://github.com/greenbone/python-gvm/compare/v20.11.3...v20.12.1
+
+## [20.11.3] - 2020-11-26
+### Added
+* Adding parameters to `get_nvt command`, so it requests all details [#348](https://github.com/greenbone/python-gvm/pull/348)
+* Improved the `modify_user` function for gmpv7 and gmpv214. Added ability to change comment, groups and authentication method of user. Meaning of name parameter got changed for gmpv214 only. It is not intended for identifying a user anymore but for specifying the new name of the user [#347](https://github.com/greenbone/python-gvm/pull/347)
+* Adding `resume_audit`, `start_audit`, `stop_audit` to gmpv9 [#349](https://github.com/greenbone/python-gvm/pull/349)
+
+### Changed
+* Implement tuple for `family` argument for `modify_config_set_family_selection` [#354](https://github.com/greenbone/python-gvm/pull/354)
+
+[20.11.3]: https://github.com/greenbone/python-gvm/compare/v20.11.2...HEAD
+
+## [20.11.2] - 2020-11-17
+### Added
+* Added the `delete_tls_certificate` function  [#335](https://github.com/greenbone/python-gvm/pull/335)
+[20.11.2]: https://github.com/greenbone/python-gvm/compare/v20.11.1...HEAD
+
+## [20.11.1] - 2020-11-16
+### Added
+* Added the `modify_audit` function [#332](https://github.com/greenbone/python-gvm/pull/332)
+* Added the `modify_policy_set_nvt_preference` function [#332](https://github.com/greenbone/python-gvm/pull/332)
+* Added the `modify_policy_set_name` function [#332](https://github.com/greenbone/python-gvm/pull/332)
+* Added the `modify_policy_set_comment` function [#332](https://github.com/greenbone/python-gvm/pull/332)
+* Added the `modify_policy_set_scanner_preference` function [#332](https://github.com/greenbone/python-gvm/pull/332)
+* Added the `modify_policy_set_nvt_selection` function [#332](https://github.com/greenbone/python-gvm/pull/332)
+* Added the `modify_policy_set_family_selection` function [#332](https://github.com/greenbone/python-gvm/pull/332)
+
+### Changed
+* Moved tests for `SeverityLevel` Enum and `get_severity_level_from_string()` [#327](https://github.com/greenbone/python-gvm/pull/327)
+* In `get_report()` the `details` parameter is `True` on default now. [#333](https://github.com/greenbone/python-gvm/pull/333)
+
+[20.11.1]: https://github.com/greenbone/python-gvm/compare/v20.11.0...HEAD
+
+## [20.11.0] - 2020-11-03
+### Added
+* Added `clone_report_format()` and `import_report_format()` [#309](https://github.com/greenbone/python-gvm/pull/309)
+* Added the `get_x_from_string()` functions to `latest` [#308](https://github.com/greenbone/python-gvm/pull/308)
+* Added the `ReportFormatType` that can be used instead of a report_format_id [#311](https://github.com/greenbone/python-gvm/pull/311)
+* Added tests for constructor of SSHConnection, TLSConnection, UnixSocketConnection and GvmConnection [#321](https://github.com/greenbone/python-gvm/pull/321)
+
+### Fixed
+* Corrected `seconds_active` parameter to `days_active` for notes and overrides. [#307](https://github.com/greenbone/python-gvm/pull/307)
+* Fixed SSHConnection throws TypeError if port is None [#321](https://github.com/greenbone/python-gvm/pull/321)
+* Fixed GvmConnection timeout set to None if None is passed [#321](https://github.com/greenbone/python-gvm/pull/321)
+* Fixed TLSConnection values set to None instead of default values when None is passed for these values [#321](https://github.com/greenbone/python-gvm/pull/321)
+* Fixed UnixSocketConnection values set to None instead of default when None is passed for these values [#321](https://github.com/greenbone/python-gvm/pull/321)
+
+[20.11.0]: https://github.com/greenbone/python-gvm/compare/v20.9.1...HEAD
+
+## [20.9.1] - 2020-09-25
+### Added
+* Added `modify_config_set_name`. [#295](https://github.com/greenbone/python-gvm/pull/295)
+* Added logic to accept the new AlertEvents `TICKET_RECEIVED`, `ASSIGNED_TICKET_CHANGED` and `OWNED_TICKET_CHANGED` and the new Condition `SEVERITY_CHANGED`. [#297](https://github.com/greenbone/python-gvm/pull/297)
+* Added `create_config_from_osp_scanner`. [#298](https://github.com/greenbone/python-gvm/pull/298)
+### Changed
+* Added the `details` parameter to `get_tls_certificate` and `get_tls_certificates`. [#293](https://github.com/greenbone/python-gvm/pull/293)
+* Added the `comment` parameter to `create_config`. [#294](https://github.com/greenbone/python-gvm/pull/294)
+### Fixed
+* Fix ScannerType check for newer protocols. [#300](https://github.com/greenbone/python-gvm/pull/300)
+
+[20.9.1]: https://github.com/greenbone/python-gvm/compare/v20.9.0...HEAD
+
+## [20.9.0] - 2020-09-17
+### Changed
+* Added the `tasks` parameter to `get_config()`. [#289](https://github.com/greenbone/python-gvm/pull/289)
+* Renamed `no_details` to `details` in `get_reports()` so it is uniform with all the other calls. [#290](https://github.com/greenbone/python-gvm/pull/290)
+### Fixed
+- Force garbage clean up when disconnect. [#286](https://github.com/greenbone/python-gvm/pull/286)
+
+[20.9.0]: https://github.com/greenbone/python-gvm/compare/v20.8.1...HEAD
+
+## [20.8.1] - 2020-09-01
+
+### Added
+
+* Added `AlertMethods`: Alemba vFire, Tippingpoint SMS [#275](https://github.com/greenbone/python-gvm/pull/275)
+* Added `AlertConditions`: Error, SeverityChanged [#275](https://github.com/greenbone/python-gvm/pull/275)
+* Added `AlertEvents`: Assigned ticket changed, Owned ticket changed, Ticket received [#275](https://github.com/greenbone/python-gvm/pull/275)
+
+### Changed
+
+* `pretty_print()` has a new argument that can optionally handle a file. The output is redirected to this file. default is `sys.stdout`, as it is for build-in `print()` [#277](https://github.com/greenbone/python-gvm/pull/277)
+
+### Fixed
+
+* `ARP_PING` is now a field of `AliveTypes`, the old `APR_PING` name is still available. [#281](https://github.com/greenbone/python-gvm/pull/281)
+* `modify_task` adds `<alert id="0"/>` if alert_ids array is empty. [#285](https://github.com/greenbone/python-gvm/pull/285)
+
+[20.8.1]: https://github.com/greenbone/python-gvm/compare/v20.8.0...HEAD
+
+## [20.8.0] - 2020-08-19
+
+### Added
+
+* Added support for GMP 20.08 [#254](https://github.com/greenbone/python-gvm/pull/254)
+
+### Changed
+
+* Refactored Gmp classes into mixins [#254](https://github.com/greenbone/python-gvm/pull/254)
+
+### Fixed
+
+* Require method and condition arguments for modify_alert with an event [#267](https://github.com/greenbone/python-gvm/pull/267)
+* Add SEVERITY_AT_LEAST to get_alert_condition_from_string [#268](https://github.com/greenbone/python-gvm/pull/268)
+
+[20.8.0]: https://github.com/greenbone/python-gvm/compare/v1.6.0...v20.8.0
+
+## [1.6.0] - 2020-06-10
+
+### Added
+
+* Extend AliveTest and ScannerType enums.
+  [#235](https://github.com/greenbone/python-gvm/pull/235)
+
+### Fixed
+
+* Fix python-gvm v8/v9 type checks. [#244](https://github.com/greenbone/python-gvm/pull/244)
+
+[1.6.0]: https://github.com/greenbone/python-gvm/compare/v1.5.0...v1.6.0
+
 ## [1.5.0] - 2020-05-12
 
 ### Added

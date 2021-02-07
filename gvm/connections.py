@@ -40,6 +40,8 @@ DEFAULT_TIMEOUT = 60  # in seconds
 DEFAULT_GVM_PORT = 9390
 DEFAULT_UNIX_SOCKET_PATH = "/var/run/gvmd.sock"
 DEFAULT_SSH_PORT = 22
+DEFAULT_SSH_USERNAME = "gmp"
+DEFAULT_SSH_PASSWORD = ""
 DEFAULT_HOSTNAME = '127.0.0.1'
 MAX_SSH_DATA_LENGTH = 4095
 
@@ -78,7 +80,7 @@ class XmlReader:
                 "Cannot parse XML response. Response data "
                 "read {0}".format(data),
                 e,
-            )
+            ) from None
 
 
 class GvmConnection(XmlReader):
@@ -92,14 +94,13 @@ class GvmConnection(XmlReader):
 
     def __init__(self, timeout: Optional[int] = DEFAULT_TIMEOUT):
         self._socket = None
-        self._timeout = timeout
+        self._timeout = timeout if timeout is not None else DEFAULT_TIMEOUT
 
     def _read(self):
         return self._socket.recv(BUF_SIZE)
 
     def connect(self):
-        """Establish a connection to a remote server
-        """
+        """Establish a connection to a remote server"""
         raise NotImplementedError
 
     def send(self, data: Union[bytes, str]):
@@ -155,8 +156,7 @@ class GvmConnection(XmlReader):
         return response
 
     def disconnect(self):
-        """Disconnect and close the connection to the remote server
-        """
+        """Disconnect and close the connection to the remote server"""
         try:
             if self._socket is not None:
                 self._socket.close()
@@ -164,8 +164,7 @@ class GvmConnection(XmlReader):
             logger.debug("Connection closing error: %s", e)
 
     def finish_send(self):
-        """Indicate to the remote server you are done with sending data
-        """
+        """Indicate to the remote server you are done with sending data"""
         # shutdown socket for sending. only allow reading data afterwards
         self._socket.shutdown(socketlib.SHUT_WR)
 
@@ -189,15 +188,19 @@ class SSHConnection(GvmConnection):
         timeout: Optional[int] = DEFAULT_TIMEOUT,
         hostname: Optional[str] = DEFAULT_HOSTNAME,
         port: Optional[int] = DEFAULT_SSH_PORT,
-        username: Optional[str] = "gmp",
-        password: Optional[str] = ""
+        username: Optional[str] = DEFAULT_SSH_USERNAME,
+        password: Optional[str] = DEFAULT_SSH_PASSWORD,
     ):
         super().__init__(timeout=timeout)
 
-        self.hostname = hostname
-        self.port = int(port)
-        self.username = username
-        self.password = password
+        self.hostname = hostname if hostname is not None else DEFAULT_HOSTNAME
+        self.port = int(port) if port is not None else DEFAULT_SSH_PORT
+        self.username = (
+            username if username is not None else DEFAULT_SSH_USERNAME
+        )
+        self.password = (
+            password if password is not None else DEFAULT_SSH_PASSWORD
+        )
 
     def _send_all(self, data):
         while data:
@@ -235,7 +238,7 @@ class SSHConnection(GvmConnection):
             paramiko.AuthenticationException,
             paramiko.SSHException,
         ) as e:
-            raise GvmError("SSH Connection failed", e)
+            raise GvmError("SSH Connection failed", e) from None
 
     def _read(self):
         return self._stdout.channel.recv(BUF_SIZE)
@@ -246,6 +249,17 @@ class SSHConnection(GvmConnection):
     def finish_send(self):
         # shutdown socket for sending. only allow reading data afterwards
         self._stdout.channel.shutdown(socketlib.SHUT_WR)
+
+    def disconnect(self):
+        """Disconnect and close the connection to the remote server"""
+        try:
+            if self._socket is not None:
+                self._socket.close()
+        except OSError as e:
+            logger.debug("Connection closing error: %s", e)
+
+        if self._socket:
+            del self._socket, self._stdin, self._stdout, self._stderr
 
 
 class TLSConnection(GvmConnection):
@@ -280,12 +294,12 @@ class TLSConnection(GvmConnection):
         hostname: Optional[str] = DEFAULT_HOSTNAME,
         port: Optional[int] = DEFAULT_GVM_PORT,
         password: Optional[str] = None,
-        timeout: Optional[int] = DEFAULT_TIMEOUT
+        timeout: Optional[int] = DEFAULT_TIMEOUT,
     ):
         super().__init__(timeout=timeout)
 
-        self.hostname = hostname
-        self.port = port
+        self.hostname = hostname if hostname is not None else DEFAULT_HOSTNAME
+        self.port = port if port is not None else DEFAULT_GVM_PORT
         self.certfile = certfile
         self.cafile = cafile
         self.keyfile = keyfile
@@ -334,15 +348,14 @@ class UnixSocketConnection(GvmConnection):
         self,
         *,
         path: Optional[str] = DEFAULT_UNIX_SOCKET_PATH,
-        timeout: Optional[int] = DEFAULT_TIMEOUT
+        timeout: Optional[int] = DEFAULT_TIMEOUT,
     ):
         super().__init__(timeout=timeout)
 
-        self.path = path
+        self.path = path if path is not None else DEFAULT_UNIX_SOCKET_PATH
 
     def connect(self):
-        """Connect to the UNIX socket
-        """
+        """Connect to the UNIX socket"""
         self._socket = socketlib.socket(
             socketlib.AF_UNIX, socketlib.SOCK_STREAM
         )

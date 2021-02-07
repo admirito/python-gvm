@@ -11,6 +11,8 @@ Protocols
     gmpv7
     gmpv8
     gmpv9
+    gmpv208
+    gmpv214
     ospv1
 
 Dynamic
@@ -19,7 +21,13 @@ Dynamic
 To dynamically use the supported GMP version of the manager daemon see
 :mod:`gvm.protocols.gmp` for details.
 
-Latest
-^^^^^^
+"latest" protocols
+^^^^^^^^^^^^^^^^^^
 
 .. automodule:: gvm.protocols.latest
+
+
+"next" protocols
+^^^^^^^^^^^^^^^^
+
+.. automodule:: gvm.protocols.next

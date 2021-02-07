@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019 Greenbone Networks GmbH
+# Copyright (C) 2019-2020 Greenbone Networks GmbH
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -28,12 +28,16 @@ from gvm.protocols.base import GvmProtocol, GvmConnection
 from gvm.protocols.gmpv7 import Gmp as Gmpv7
 from gvm.protocols.gmpv8 import Gmp as Gmpv8
 from gvm.protocols.gmpv9 import Gmp as Gmpv9
+from gvm.protocols.gmpv208 import Gmp as Gmpv208
+from gvm.protocols.gmpv214 import Gmp as Gmpv214
 
 from gvm.transforms import EtreeCheckCommandTransform
 
 from gvm.xml import XmlCommand
 
-SupportedGmpVersion = Union[Gmpv7, Gmpv8, Gmpv9]
+SUPPORTED_GMP_VERSIONS = Union[  # pylint: disable=invalid-name
+    Gmpv7, Gmpv8, Gmpv9, Gmpv208, Gmpv214
+]
 
 
 class Gmp(GvmProtocol):
@@ -72,14 +76,13 @@ class Gmp(GvmProtocol):
         self,
         connection: GvmConnection,
         *,
-        transform: Optional[Callable[[str], Any]] = None
+        transform: Optional[Callable[[str], Any]] = None,
     ):
         super().__init__(connection, transform=EtreeCheckCommandTransform())
         self._gmp_transform = transform
 
     def determine_remote_gmp_version(self) -> str:
-        """ Determine the supported GMP version of the remote daemon
-        """
+        """Determine the supported GMP version of the remote daemon"""
         self.connect()
         resp = self._send_xml_command(XmlCommand("get_version"))
         self.disconnect()
@@ -93,9 +96,9 @@ class Gmp(GvmProtocol):
 
         return version_el.text
 
-    def determine_supported_gmp(self) -> SupportedGmpVersion:
-        """ Determine supported GMP version of the remote daemon and return a
-            corresponding Gmp class instance
+    def determine_supported_gmp(self) -> SUPPORTED_GMP_VERSIONS:
+        """Determine supported GMP version of the remote daemon and return a
+        corresponding Gmp class instance
         """
         version = self.determine_remote_gmp_version()
         major_version = int(version.split('.')[0])
@@ -103,8 +106,12 @@ class Gmp(GvmProtocol):
             gmp_class = Gmpv7
         elif major_version == 8:
             gmp_class = Gmpv8
-        elif major_version >= 9:
+        elif major_version == 9:
             gmp_class = Gmpv9
+        elif major_version == 20:
+            gmp_class = Gmpv208
+        elif major_version >= 21:
+            gmp_class = Gmpv214
         else:
             raise GvmError(
                 'Remote manager daemon uses an unsupported version of GMP. '

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 #
 # Configuration file for the Sphinx documentation builder.
 #
@@ -24,12 +24,12 @@ import gvm
 # -- Project information -----------------------------------------------------
 
 project = 'python-gvm'
-copyright = '2018 - 2019, Greenbone Networks GmbH'
+copyright = '2018 - 2021, Greenbone Networks GmbH'
 author = 'Greenbone Networks GmbH'
 
 # The short X.Y version
 
-version = '{0}.{1}'.format(gvm.VERSION[0], gvm.VERSION[1])
+version = '{0}.{1}'.format(gvm.__version__[0], gvm.__version__[1])
 # The full version, including alpha/beta/rc tags
 release = gvm.get_version()
 
