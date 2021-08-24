@@ -6,7 +6,7 @@
 [![PyPI release](https://img.shields.io/pypi/v/python-gvm.svg)](https://pypi.org/project/python-gvm/)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/greenbone/python-gvm/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/greenbone/python-gvm/?branch=master)
 [![code test coverage](https://codecov.io/gh/greenbone/python-gvm/branch/master/graph/badge.svg)](https://codecov.io/gh/greenbone/python-gvm)
-[![CircleCI](https://circleci.com/gh/greenbone/python-gvm/tree/master.svg?style=svg)](https://circleci.com/gh/greenbone/python-gvm/tree/master)
+[![Build and test](https://github.com/greenbone/python-gvm/actions/workflows/ci-python.yml/badge.svg)](https://github.com/greenbone/python-gvm/actions/workflows/ci-python.yml)
 
 The Greenbone Vulnerability Management Python API library (**python-gvm**) is a
 collection of APIs that help with remote controlling a Greenbone Security
@@ -41,7 +41,8 @@ Please consider to always use the **newest** version of `gvm-tools` and `python-
 We freqently update this projects to add features and keep them free from bugs.
 This is why installing `python-gvm` using pip is recommended.
 
-The current release of `python-gvm` can be used with all supported GOS versions.
+**To use `python-gvm` with an old GMP version (7, 8, 9) you must use a release version**
+**that is `<21.05`. In the `21.05` release the support of these versions have been dropped.**
 
 ### Requirements
 
@@ -127,6 +128,6 @@ are active.
 
 ## License
 
-Copyright (C) 2017-2020 [Greenbone Networks GmbH](https://www.greenbone.net/)
+Copyright (C) 2017-2021 [Greenbone Networks GmbH](https://www.greenbone.net/)
 
 Licensed under the [GNU General Public License v3.0 or later](LICENSE).

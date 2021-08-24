@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2018 - 2019 Greenbone Networks GmbH
+# Copyright (C) 2018-2021 Greenbone Networks GmbH
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -18,11 +18,16 @@
 """
 Module for connections to GVM server daemons like gvmd and ospd.
 """
+import base64
+import hashlib
 import logging
 import socket as socketlib
 import ssl
+import sys
 import time
 
+
+from pathlib import Path
 from typing import Optional, Union
 
 import paramiko
@@ -43,6 +48,7 @@ DEFAULT_SSH_PORT = 22
 DEFAULT_SSH_USERNAME = "gmp"
 DEFAULT_SSH_PASSWORD = ""
 DEFAULT_HOSTNAME = '127.0.0.1'
+DEFAULT_KNOWN_HOSTS_FILE = ".ssh/known_hosts"
 MAX_SSH_DATA_LENGTH = 4095
 
 
@@ -77,8 +83,7 @@ class XmlReader:
             self._parser.feed(data)
         except etree.ParseError as e:
             raise GvmError(
-                "Cannot parse XML response. Response data "
-                "read {0}".format(data),
+                f"Cannot parse XML response. Response data read {data}",
                 e,
             ) from None
 
@@ -96,14 +101,14 @@ class GvmConnection(XmlReader):
         self._socket = None
         self._timeout = timeout if timeout is not None else DEFAULT_TIMEOUT
 
-    def _read(self):
+    def _read(self) -> bytes:
         return self._socket.recv(BUF_SIZE)
 
     def connect(self):
         """Establish a connection to a remote server"""
         raise NotImplementedError
 
-    def send(self, data: Union[bytes, str]):
+    def send(self, data: Union[bytes, str]) -> None:
         """Send data to the connected remote server
 
         Arguments:
@@ -114,9 +119,9 @@ class GvmConnection(XmlReader):
             raise GvmError("Socket is not connected")
 
         if isinstance(data, str):
-            self._socket.sendall(data.encode())
+            return self._socket.sendall(data.encode())
         else:
-            self._socket.sendall(data)
+            return self._socket.sendall(data)
 
     def read(self) -> str:
         """Read data from the remote server
@@ -190,6 +195,7 @@ class SSHConnection(GvmConnection):
         port: Optional[int] = DEFAULT_SSH_PORT,
         username: Optional[str] = DEFAULT_SSH_USERNAME,
         password: Optional[str] = DEFAULT_SSH_PASSWORD,
+        known_hosts_file: Optional[str] = None,
     ):
         super().__init__(timeout=timeout)
 
@@ -201,8 +207,15 @@ class SSHConnection(GvmConnection):
         self.password = (
             password if password is not None else DEFAULT_SSH_PASSWORD
         )
+        self.known_hosts_file = (
+            Path(known_hosts_file)
+            if known_hosts_file is not None
+            else Path.home() / DEFAULT_KNOWN_HOSTS_FILE
+        )
 
-    def _send_all(self, data):
+    def _send_all(self, data) -> int:
+        """Returns the sum of sent bytes if success"""
+        sent_sum = 0
         while data:
             sent = self._stdin.channel.send(data)
 
@@ -210,14 +223,129 @@ class SSHConnection(GvmConnection):
                 # Connection was closed by server
                 raise GvmError("Remote closed the connection")
 
-            data = data[sent:]
+            sent_sum += sent
 
-    def connect(self):
+            data = data[sent:]
+        return sent_sum
+
+    def _ssh_authentication_input_loop(
+        self, hostkeys: paramiko.HostKeys, key: paramiko.PKey
+    ) -> None:
+        # Ask user for permission to continue
+        # let it look like openssh
+        sha64_fingerprint = base64.b64encode(
+            hashlib.sha256(base64.b64decode(key.get_base64())).digest()
+        ).decode("utf-8")[:-1]
+        key_type = key.get_name().replace('ssh-', '').upper()
+        print(
+            f"The authenticity of host '{self.hostname}' can't "
+            "be established."
+        )
+        print(f"{key_type} key fingerprint is {sha64_fingerprint}.")
+        print('Are you sure you want to continue connecting (yes/no)? ', end='')
+        add = input()
+        while True:
+            if add == 'yes':
+                hostkeys.add(self.hostname, key.get_name(), key)
+                # ask user if the key should be added permanently
+                print(
+                    f'Do you want to add {self.hostname} '
+                    'to known_hosts (yes/no)? ',
+                    end='',
+                )
+                save = input()
+                while True:
+                    if save == 'yes':
+                        try:
+                            hostkeys.save(filename=self.known_hosts_file)
+                        except OSError as e:
+                            raise GvmError(
+                                'Something went wrong with writing '
+                                f'the known_hosts file: {e}'
+                            ) from None
+                        logger.info(
+                            "Warning: Permanently added '%s' (%s) to "
+                            "the list of known hosts.",
+                            self.hostname,
+                            key_type,
+                        )
+                        break
+                    elif save == 'no':
+                        logger.info(
+                            "Warning: Host '%s' (%s) not added to "
+                            "the list of known hosts.",
+                            self.hostname,
+                            key_type,
+                        )
+                        break
+                    else:
+                        print("Please type 'yes' or 'no': ", end='')
+                        save = input()
+                break
+            elif add == 'no':
+                return sys.exit(
+                    'User denied key. Host key verification failed.'
+                )
+            else:
+                print("Please type 'yes' or 'no': ", end='')
+                add = input()
+
+    def _get_remote_host_key(self):
+        """Get the remote host key for ssh connection"""
+        try:
+            tmp_socket = socketlib.socket()
+            tmp_socket.connect((self.hostname, 22))
+        except OSError as e:
+            raise GvmError(
+                "Couldn't establish a connection to fetch the"
+                f" remote server key: {e}"
+            ) from None
+
+        trans = paramiko.transport.Transport(tmp_socket)
+        try:
+            trans.start_client()
+        except paramiko.SSHException as e:
+            raise GvmError(
+                f"Couldn't fetch the remote server key: {e}"
+            ) from None
+        key = trans.get_remote_server_key()
+        try:
+            trans.close()
+        except paramiko.SSHException as e:
+            raise GvmError(
+                f"Couldn't close the connection to the remote server key: {e}"
+            ) from None
+        return key
+
+    def _ssh_authentication(self) -> None:
+        """Search/add/save the servers key for the SSH authentication process"""
+
+        # set to reject policy (avoid MITM attacks)
+        self._socket.set_missing_host_key_policy(paramiko.RejectPolicy())
+        # openssh is posix, so this might only a posix approach
+        # https://stackoverflow.com/q/32945533
+        try:
+            # load the keys into paramiko and check if remote is in the list
+            self._socket.load_host_keys(filename=self.known_hosts_file)
+        except OSError as e:
+            raise GvmError(
+                'Something went wrong with reading '
+                f'the known_hosts file: {e}'
+            ) from None
+        hostkeys = self._socket.get_host_keys()
+        if not hostkeys.lookup(self.hostname):
+            # Key not found, so connect to remote and fetch the key
+            # with the paramiko Transport protocol
+            key = self._get_remote_host_key()
+
+            self._ssh_authentication_input_loop(hostkeys=hostkeys, key=key)
+
+    def connect(self) -> None:
         """
         Connect to the SSH server and authenticate to it
         """
         self._socket = paramiko.SSHClient()
-        self._socket.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self._ssh_authentication()
 
         try:
             self._socket.connect(
@@ -229,6 +357,7 @@ class SSHConnection(GvmConnection):
                 allow_agent=False,
                 look_for_keys=False,
             )
+
             self._stdin, self._stdout, self._stderr = self._socket.exec_command(
                 "", get_pty=False
             )
@@ -237,26 +366,30 @@ class SSHConnection(GvmConnection):
             paramiko.BadHostKeyException,
             paramiko.AuthenticationException,
             paramiko.SSHException,
+            ConnectionError,
         ) as e:
-            raise GvmError("SSH Connection failed", e) from None
+            raise GvmError(f"SSH Connection failed: {e}") from None
 
-    def _read(self):
+    def _read(self) -> bytes:
         return self._stdout.channel.recv(BUF_SIZE)
 
-    def send(self, data: Union[bytes, str]):
-        self._send_all(data)
+    def send(self, data: Union[bytes, str]) -> int:
+        return self._send_all(data)
 
     def finish_send(self):
         # shutdown socket for sending. only allow reading data afterwards
         self._stdout.channel.shutdown(socketlib.SHUT_WR)
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """Disconnect and close the connection to the remote server"""
         try:
             if self._socket is not None:
                 self._socket.close()
         except OSError as e:
             logger.debug("Connection closing error: %s", e)
+            raise e
+        except AttributeError as e:
+            logger.debug("Connection might already be closed. No socket found.")
 
         if self._socket:
             del self._socket, self._stdin, self._stdout, self._stderr
@@ -349,12 +482,12 @@ class UnixSocketConnection(GvmConnection):
         *,
         path: Optional[str] = DEFAULT_UNIX_SOCKET_PATH,
         timeout: Optional[int] = DEFAULT_TIMEOUT,
-    ):
+    ) -> None:
         super().__init__(timeout=timeout)
 
         self.path = path if path is not None else DEFAULT_UNIX_SOCKET_PATH
 
-    def connect(self):
+    def connect(self) -> None:
         """Connect to the UNIX socket"""
         self._socket = socketlib.socket(
             socketlib.AF_UNIX, socketlib.SOCK_STREAM

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2018 - 2019 Greenbone Networks GmbH
+# Copyright (C) 2018-2021 Greenbone Networks GmbH
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -39,7 +39,7 @@ class EtreeTransform:
         return self._convert_response(response)
 
 
-def _check_command_status(root: etree.Element):
+def check_command_status(root: etree.Element):
     status = root.get("status")
 
     if status is None:
@@ -64,7 +64,7 @@ class CheckCommandTransform(EtreeTransform):
     def __call__(self, response: str) -> str:
         root = self._convert_response(response)
 
-        _check_command_status(root)
+        check_command_status(root)
 
         return response
 
@@ -78,6 +78,6 @@ class EtreeCheckCommandTransform(EtreeTransform):
     def __call__(self, response: str) -> etree.Element:
         root = self._convert_response(response)
 
-        _check_command_status(root)
+        check_command_status(root)
 
         return root

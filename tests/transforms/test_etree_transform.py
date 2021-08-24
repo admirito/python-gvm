@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2018 Greenbone Networks GmbH
+# Copyright (C) 2018-2021 Greenbone Networks GmbH
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -26,7 +26,7 @@ from gvm.transforms import EtreeTransform
 class EtreeTransformTestCase(unittest.TestCase):
     def test_transform_response(self):
         transform = EtreeTransform()
-        result = transform('<foo/')
+        result = transform('<foo/>')
 
         self.assertTrue(etree.iselement(result))
 

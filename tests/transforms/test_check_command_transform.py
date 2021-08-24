@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2018 Greenbone Networks GmbH
+# Copyright (C) 2018-2021 Greenbone Networks GmbH
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -29,7 +29,7 @@ class CheckCommandTransformTestCase(unittest.TestCase):
         transform = CheckCommandTransform()
 
         with self.assertRaises(GvmError):
-            transform('<foo/')
+            transform('<foo/>')
 
     def test_no_success_300status_transform(self):
         transform = CheckCommandTransform()

@@ -1,7 +1,7 @@
 # Release instructions
 
 Before creating a new release please do a careful consideration about the
-version number for the new release. We are following [Semantic Versioning](https://semver.org/)
+version number for the new release. We are following [Calendar Versioning](https://calver.org)
 and [PEP440](https://www.python.org/dev/peps/pep-0440/).
 
 ## Preparing the Required Python Packages
@@ -131,7 +131,7 @@ if it has been lost.
 * Run pontos-release prepare
 
   ```sh
-  poetry run pontos-release --release-version <version> --next-release-version <dev-version> --project python-gvm --space greenbone --git-signing-key <your-public-gpg-key> --git-remote-name upstream prepare
+  poetry run pontos-release --project python-gvm --space greenbone prepare --release-version <version> --next-version <dev-version> --git-signing-key <your-public-gpg-key>
   ```
 
 * Check git log and tag
@@ -158,11 +158,12 @@ if it has been lost.
 * Run pontos-release release
 
   ```sh
-  poetry run pontos-release --release-version <version> --next-release-version <dev-version> --project python-gvm --space greenbone --git-signing-key <your-public-gpg-key> --git-remote-name upstream release
+  poetry run pontos-release --project python-gvm --space greenbone release --release-version <version> --git-remote-name upstream
 
 ## Uploading to the 'real' PyPI
 
-* Uploading to PyPI is done automatically by pushing a git tag via CircleCI
+* Uploading to PyPI is done automatically after creating a release via GitHub
+  Actions
 
 * Check if new version is available at <https://pypi.org/project/python-gvm>.
 
@@ -171,3 +172,12 @@ if it has been lost.
 * Check the Github release:
 
   See https://github.com/greenbone/python-gvm/releases
+
+## Sign tar and zipball
+
+* May run pontos-release sign
+
+
+  ```sh
+      poetry run pontos-release --project python-gvm --space greenbone sign --release-version <version>
+  ```

@@ -3,7 +3,115 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to [Calendar Versioning](https://calver.org).
+
+## [21.6.0] - 2021-06-21
+### Changed
+* Changed API calls for SecInfo [#501](https://github.com/greenbone/python-gvm/pull/501):
+  * `get_nvt_list()` -> `get_nvts()`
+  * `get_cpe_list()` -> `get_cpes()`
+  * `get_cve_list()` -> `get_cves()`
+  * `get_cert_bund_advisory_list()` -> `get_cert_bund_advisories()`
+  * `get_dnf_cert_advisory_list()` -> `get_dnf_cert_advisories()`
+  * `get_oval_definition_list()` -> `get_oval_definitions()`
+
+[21.6.0]: https://github.com/greenbone/python-gvm/compare/v21.5.2...v21.6.0
+
+## [21.5.2] - 2021-06-01
+### Added
+Add `import_policy` API call [#496](https://github.com/greenbone/python-gvm/pull/496)
+
+[21.5.2]: https://github.com/greenbone/python-gvm/compare/v21.5.1...v21.5.2
+
+## [21.5.1] - 2021-06-01
+### Changed
+* For SSH Connections: Reject unknown hosts, ask user if he wants to connect to unknown remote host and ask user if he wants to add the host to `known_hosts` [#486](https://github.com/greenbone/python-gvm/pull/486)
+
+### Fixed
+* Export `HelpFormat` and `get_help_format_from_string()` [#495](https://github.com/greenbone/python-gvm/pull/495)
+
+[21.5.1]: https://github.com/greenbone/python-gvm/compare/v21.5.0...v21.5.1
+
+## [21.5.0] - 2021-05-25
+
+**Dropped support for GMP v7, v8 and v9!**
+
+### Added
+* Introduced new explicit API calls for SecInfo: `get_nvt()`, `get_nvt_list()`, `get_cpe()`, `get_cpe_list()`, `get_cve()`, `get_cve_list()`, `get_cert_bund_advisory()`, `get_cert_bund_advisory_list()`, `get_dnf_cert_advisory()`, `get_dnf_cert_advisory_list()`, `get_oval_definition()`, `get_oval_definition_list()`. [#456](https://github.com/greenbone/python-gvm/pull/456)
+
+### Changed
+* Splitted up `get_preference(s)` into `get_nvt_preference(s)` and `get_scan_config_preference(s)`. [#473](https://github.com/greenbone/python-gvm/pull/473)
+* Improved and changed `help()`: Introduced `HelpFormat` Enum, changed `format` parameter to `help_format` using `HelpFormat`, changed `help_type` to `brief` and bool, as it only has two options (default and brief). [#473](https://github.com/greenbone/python-gvm/pull/473)
+* Changed `filter` to `filter_string` in getter functions. [#470](https://github.com/greenbone/python-gvm/pull/470) [#471](https://github.com/greenbone/python-gvm/pull/471) [#473](https://github.com/greenbone/python-gvm/pull/473)
+* API changes: `get_setting(s)` -> `get_user_setting(s)`, `modify_setting` -> `modify_user_setting`. [#472](https://github.com/greenbone/python-gvm/pull/472)
+* Changed all API calls for `_config` to `_scan_config` to match other Greenbone components. [#465](https://github.com/greenbone/python-gvm/pull/465)
+* Split up `get_asset(s)` into `get_host(s)` and `get_operating_system(s)`. [#459](https://github.com/greenbone/python-gvm/pull/459)
+* Split up `delete_asset` into `delete_host` and `delete_operating_system`. [#459](https://github.com/greenbone/python-gvm/pull/459)
+* Split up `modify_asset` into `modify_host` and `modify_operating_system`. [#459](https://github.com/greenbone/python-gvm/pull/459)
+* Deleted `AssetType`. It is not required anymore. [#459](https://github.com/greenbone/python-gvm/pull/458)
+* Changed the API calls `get_nvt()` and `get_nvts()` to `get_scan_config_nvt()` and `get_scan_config_nvts()`.  [#456](https://github.com/greenbone/python-gvm/pull/456)
+* Splitted up the GmpMonolith class:
+  * Detached the SystemReports API calls from the GMP class into a new `SystemReportsMixin`. [#473](https://github.com/greenbone/python-gvm/pull/473)
+  * Detached the Help API calls from the GMP class into a new `HelpMixin`. [#473](https://github.com/greenbone/python-gvm/pull/473)
+  * Detached the Trashcan API calls from the GMP class into a new `TrashcanMixin`. [#472](https://github.com/greenbone/python-gvm/pull/472)
+  * Detached the Authentication API calls from the GMP class into a new `AuthenticationMixin`. [#472](https://github.com/greenbone/python-gvm/pull/472)
+  * Detached the Version API calls from the GMP class into a new `VersionMixin`. [#472](https://github.com/greenbone/python-gvm/pull/472)
+  * Detached the Preferences API calls from the GMP class into a new `PreferencesMixin`. [#471](https://github.com/greenbone/python-gvm/pull/471)
+  * Detached the Settings API calls from the GMP class into a new `UserSettingsMixin`. [#471](https://github.com/greenbone/python-gvm/pull/471)
+  * Detached the Groups API calls from the GMP class into a new `GroupsMixin`. [#471](https://github.com/greenbone/python-gvm/pull/471)
+  * Detached the Vulnerabilities API calls from the GMP class into a new `VulnerabilitiesMixin`. [#471](https://github.com/greenbone/python-gvm/pull/471)
+  * Detached the ReportFormats API calls from the GMP class into a new `ReportFormatsMixin`. [#470](https://github.com/greenbone/python-gvm/pull/470)
+  * Detached the Roles API calls from the GMP class into a new `RolesMixin`. [#470](https://github.com/greenbone/python-gvm/pull/470)
+  * Detached the Tickets API calls from the GMP class into a new `TicketsMixin`. [#470](https://github.com/greenbone/python-gvm/pull/470)
+  * Detached the HostsOrdering Type from the GMP types class. [#469](https://github.com/greenbone/python-gvm/pull/469)
+  * Detached the TicketStatus Type from the GMP types class. [#469](https://github.com/greenbone/python-gvm/pull/469)
+  * Detached the Schedules API calls from the GMP class into a new `SchedulesMixin`. [#469](https://github.com/greenbone/python-gvm/pull/469)
+  * Detached the Filters API calls from the GMP class into a new `FiltersMixin`.  [#469](https://github.com/greenbone/python-gvm/pull/469)
+  * Detached the Tags API calls from the GMP class into a new `TagsMixin`. [#468](https://github.com/greenbone/python-gvm/pull/468)
+  * Detached the Feeds API calls from the GMP class into a new `FeedMixin`. [#468](https://github.com/greenbone/python-gvm/pull/468) [#472](https://github.com/greenbone/python-gvm/pull/472)
+  * Detached the Aggregates API calls from the GMP class into a new `AggregatesMixin`. [#468](https://github.com/greenbone/python-gvm/pull/468)
+  * Detached the EntityType from the GMP types class into a new `entites` file. [#467](https://github.com/greenbone/python-gvm/pull/467)
+  * Detached the Users API calls from the GMP class into a new `UsersMixin`. [#467](https://github.com/greenbone/python-gvm/pull/467)
+  * Detached the Permissions API calls from the GMP class into a new `PermissionsMixin`. [#467](https://github.com/greenbone/python-gvm/pull/467)
+  * Detached the Scanner API calls from the GMP class into a new `ScannersMixin`. [#466](https://github.com/greenbone/python-gvm/pull/466)
+  * Detached the Credential API calls from the GMP class into a new `CredentialsMixin`. [#466](https://github.com/greenbone/python-gvm/pull/466)
+  * Detached Config and Policy calls from GMP class into new `ScanConfigsMixin` and `PoliciesMixin`. [#465](https://github.com/greenbone/python-gvm/pull/465)
+  * Detached the Audit API calls from the GMP class into a new `AuditsMixin`. [#464](https://github.com/greenbone/python-gvm/pull/464)
+  * Detached TLS-Certificates and assets into `TLSCertificatesMixin`, `HostsMixin` and `OperatingSystemsMixin`. [#459](https://github.com/greenbone/python-gvm/pull/458)
+  * Detached the Alerts API calls from the GMP class into a new `AlertsMixin`. [#458](https://github.com/greenbone/python-gvm/pull/458)
+  * Detached the Notes and Overrides API calls from the GMP class into a new `NotesMixin` and `OverridesMixin`. [#457](https://github.com/greenbone/python-gvm/pull/457)
+  * Detached the `InfoType` from the GMP types class.  [#456](https://github.com/greenbone/python-gvm/pull/456)
+  * Detached the SecInfo (CPE, CVE, NVT, CERT-BUND, DNF-CERT, OVAL Definitions) calls from GMP class into new `SecInfoMixin`. [#456](https://github.com/greenbone/python-gvm/pull/456)
+  * Detached the PortList and PortRange API calls from the GMP class into a new `PortListMixin`. [#446](https://github.com/greenbone/python-gvm/pull/446)
+  * Detached the Target API calls from the GMP class into a new `TargetsMixin`. [#446](https://github.com/greenbone/python-gvm/pull/446)
+  * Detached the `AliveTest` from the GMP types class. [#446](https://github.com/greenbone/python-gvm/pull/446)
+  * Detached the `PortListType` from the GMP types class. [#446](https://github.com/greenbone/python-gvm/pull/446)
+  * Detached the ReportFormatType from the GMP types class. [#445](https://github.com/greenbone/python-gvm/pull/445)
+  * Detached the Report API calls from the GMP class into a new `ReportMixin`. [#445](https://github.com/greenbone/python-gvm/pull/445)
+  * Detached the Task API calls from the GMP class into a new `TasksMixin`. [#443](https://github.com/greenbone/python-gvm/pull/443)
+* Moved helper functions from gmp to utils. The response XML will not be recovered by the parser anymore! [#442](https://github.com/greenbone/python-gvm/pull/442)
+
+### Removed
+* Removed `sync_feed`, `sync_scap`, and `sync_cert` calls. [#472](https://github.com/greenbone/python-gvm/pull/472)
+* Removed `TimeUnit`. It was used for schedules before iCal and is not required anymore. [#469](https://github.com/greenbone/python-gvm/pull/469)
+* Removed `Gmpv214Mixin`. [#467](https://github.com/greenbone/python-gvm/pull/467)
+* Remove support of delete host/operating system by a report . [#459](https://github.com/greenbone/python-gvm/pull/459)
+* Remove deprecated `make_unique` parameter from `Targets`. [#446](https://github.com/greenbone/python-gvm/pull/446)
+* Removed deprecated `Agents` completely. [#441](https://github.com/greenbone/python-gvm/pull/441)
+* **Dropped support** for GMP v7, v8 and v9! The oldest usable GMP version is 20.8 
+  [#436](https://github.com/greenbone/python-gvm/pull/436)
+  [#437](https://github.com/greenbone/python-gvm/pull/437)
+  [#438](https://github.com/greenbone/python-gvm/pull/438)
+  [#439](https://github.com/greenbone/python-gvm/pull/439)
+  [#444](https://github.com/greenbone/python-gvm/pull/444)
+
+[21.5.0]: https://github.com/greenbone/python-gvm/compare/v21.4.0...v21.5.0
+
+## [21.4.0] - 2021-04-26
+### Changed
+* `get_feed` can also be requested with `GVMD_DATA` for 20.08 and newer, added `GVMD_DATA` to the FeedType and updated API call [#434](https://github.com/greenbone/python-gvm/pull/434)
+
+[21.4.0]: https://github.com/greenbone/python-gvm/compare/v21.1.3...v21.4.0
 
 ## [21.1.3] - 2021-01-27
 ### Added
