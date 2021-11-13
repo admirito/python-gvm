@@ -19,30 +19,30 @@
 import unittest
 
 from gvm.errors import InvalidArgument
-from gvm.protocols.gmpv208 import UserAuthType, get_user_auth_type_from_string
+from gvm.protocols.gmpv208 import UserAuthType
 
 
 class GetUserAuthTypeFromStringTestCase(unittest.TestCase):
     def test_invalid(self):
         with self.assertRaises(InvalidArgument):
-            get_user_auth_type_from_string('foo')
+            UserAuthType.from_string('foo')
 
     def test_none_or_empty(self):
-        ct = get_user_auth_type_from_string(None)
+        ct = UserAuthType.from_string(None)
         self.assertIsNone(ct)
-        ct = get_user_auth_type_from_string('')
+        ct = UserAuthType.from_string('')
         self.assertIsNone(ct)
 
     def test_file(self):
-        ct = get_user_auth_type_from_string('file')
+        ct = UserAuthType.from_string('file')
         self.assertEqual(ct, UserAuthType.FILE)
 
     def test_radius_connect(self):
-        ct = get_user_auth_type_from_string('radius_connect')
+        ct = UserAuthType.from_string('radius_connect')
         self.assertEqual(ct, UserAuthType.RADIUS_CONNECT)
 
     def test_ldap_connect(self):
-        ct = get_user_auth_type_from_string('ldap_connect')
+        ct = UserAuthType.from_string('ldap_connect')
         self.assertEqual(ct, UserAuthType.LDAP_CONNECT)
 
 

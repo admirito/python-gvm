@@ -17,10 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from gvm.errors import RequiredArgument
-from gvm.protocols.gmpv208.entities.report_formats import (
-    ReportFormatType,
-    get_report_format_id_from_string,
-)
+from gvm.protocols.gmpv208.entities.report_formats import ReportFormatType
 
 
 class GmpModifyReportFormatTestMixin:
@@ -64,11 +61,10 @@ class GmpModifyReportFormatTestMixin:
             report_format_id=ReportFormatType.XML, name='foo'
         )
 
-        report_format_id = get_report_format_id_from_string('xml').value
+        report_format_id = ReportFormatType.from_string('xml').value
         self.connection.send.has_been_called_with(
-            '<modify_report_format report_format_id="{}">'
-            '<name>foo</name>'
-            '</modify_report_format>'.format(report_format_id)
+            f'<modify_report_format report_format_id="{report_format_id}">'
+            '<name>foo</name></modify_report_format>'
         )
 
     def test_modify_report_format_with_active(self):

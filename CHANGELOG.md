@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Calendar Versioning](https://calver.org).
 
+## [Unreleased]
+### Added
+### Changed
+* Switch to [`poetry-core`](https://github.com/python-poetry/poetry-core) as build backend
+
+### Deprecated
+### Removed
+### Fixed
+
+[Unreleased]: https://github.com/greenbone/python-gvm/compare/v21.6.0...HEAD
+
+
 ## [21.6.0] - 2021-06-21
 ### Changed
 * Changed API calls for SecInfo [#501](https://github.com/greenbone/python-gvm/pull/501):
@@ -14,6 +26,8 @@ and this project adheres to [Calendar Versioning](https://calver.org).
   * `get_cert_bund_advisory_list()` -> `get_cert_bund_advisories()`
   * `get_dnf_cert_advisory_list()` -> `get_dnf_cert_advisories()`
   * `get_oval_definition_list()` -> `get_oval_definitions()`
+### Removed
+* Removed debug print statement in `check_command_status()` [#506](https://github.com/greenbone/python-gvm/pull/506)
 
 [21.6.0]: https://github.com/greenbone/python-gvm/compare/v21.5.2...v21.6.0
 

@@ -32,21 +32,22 @@ class TicketStatus(Enum):
     FIXED = 'Fixed'
     CLOSED = 'Closed'
 
+    @classmethod
+    def from_string(
+        cls,
+        ticket_status: Optional[str],
+    ) -> Optional["TicketStatus"]:
+        """Convert a ticket status string into a TicketStatus instance"""
+        if not ticket_status:
+            return None
 
-def get_ticket_status_from_string(
-    ticket_status: Optional[str],
-) -> Optional[TicketStatus]:
-    """Convert a ticket status string into a TicketStatus instance"""
-    if not ticket_status:
-        return None
-
-    try:
-        return TicketStatus[ticket_status.upper()]
-    except KeyError:
-        raise InvalidArgument(
-            argument='ticket_status',
-            function=get_ticket_status_from_string.__name__,
-        ) from None
+        try:
+            return cls[ticket_status.upper()]
+        except KeyError:
+            raise InvalidArgument(
+                argument='ticket_status',
+                function=cls.from_string.__name__,
+            ) from None
 
 
 class TicketsMixin:
@@ -239,7 +240,7 @@ class TicketsMixin:
                 )
 
             cmd.add_element('status', status.value)
-            cmd.add_element('{}_note'.format(status.name.lower()), note)
+            cmd.add_element(f'{status.name.lower()}_note', note)
 
         if comment:
             cmd.add_element("comment", comment)

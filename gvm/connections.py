@@ -388,7 +388,7 @@ class SSHConnection(GvmConnection):
         except OSError as e:
             logger.debug("Connection closing error: %s", e)
             raise e
-        except AttributeError as e:
+        except AttributeError:
             logger.debug("Connection might already be closed. No socket found.")
 
         if self._socket:
@@ -496,13 +496,9 @@ class UnixSocketConnection(GvmConnection):
         try:
             self._socket.connect(self.path)
         except FileNotFoundError:
-            raise GvmError(
-                "Socket {path} does not exist".format(path=self.path)
-            ) from None
+            raise GvmError(f"Socket {self.path} does not exist") from None
         except ConnectionError:
-            raise GvmError(
-                "Could not connect to socket {}".format(self.path)
-            ) from None
+            raise GvmError(f"Could not connect to socket {self.path}") from None
 
 
 class DebugConnection:
