@@ -1,3 +1,9 @@
+python-gvm (21.10.0-1) focal; urgency=medium
+
+  * Import upstream version 21.10.0
+
+ -- Mohammad Razavi <mrazavi64@gmail.com>  Sat, 13 Nov 2021 13:06:20 +0330
+
 python-gvm (21.6.0-1) focal; urgency=medium
 
   * Import upstream version 21.6.0
